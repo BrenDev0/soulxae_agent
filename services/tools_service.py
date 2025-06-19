@@ -1,5 +1,5 @@
-from ..dependencies.container import embedding_service
-from ..tools.tool_registry import tool_registry
+from dependencies.container import embedding_service
+from tools.tool_registry import tool_registry
 from typing import List
 
 class ToolsService: 

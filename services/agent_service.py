@@ -1,5 +1,5 @@
-from  .embedding_service import EmbeddingService
-from.prompt_service import PromptService
+from  services.embedding_service import EmbeddingService
+from services.prompt_service import PromptService
 from typing import List
 from sqlalchemy.orm import Session
 

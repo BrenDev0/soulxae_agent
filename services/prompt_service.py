@@ -3,10 +3,9 @@ from langchain_core.prompts import FewShotPromptTemplate, ChatPromptTemplate, Pr
 from models.db.models import Tool
 from models.db.models import Example
 from typing import List, Optional, Dict
-from ..dependencies.container import redis_service
 
 class PromptService:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session, redis_service):
         self.session = session
         self.redis_service = redis_service 
 

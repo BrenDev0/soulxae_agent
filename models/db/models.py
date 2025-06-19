@@ -25,11 +25,13 @@ class Example(Base):
 class Agent(Base):
     __tablename__ = 'agents'
     agent_id = Column(String, primary_key=True)
+    name = Column(Text)
+    description = Column(Text)
+    user_id = Column(String, ForeignKey('users.user_id'))
     system_prompt = Column(Text)
+    greeting_message = Column(Text)
     max_tokens = Column(Integer)
     temperature = Column(Float)
-    user_id = Column(Text)
 
-class Agent_tool(Base):
-    __tablename__ = 'agent_tools'
+
     

@@ -3,3 +3,4 @@ langchain_core==0.3.65
 pydantic==2.11.7
 PyJWT==2.10.1
 SQLAlchemy==2.0.41
+uvicorn[standard]
