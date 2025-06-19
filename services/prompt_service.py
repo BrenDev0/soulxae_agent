@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from langchain_core.prompts import FewShotPromptTemplate, ChatPromptTemplate, PromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
-from models.db.tool import Tool
-from models.db.example import Example
+from models.db.models import Tool
+from models.db.models import Example
 from typing import List, Optional, Dict
-from ..dependencies.redis_service import redis_service
+from ..dependencies.container import redis_service
 
 class PromptService:
     def __init__(self, session: Session):

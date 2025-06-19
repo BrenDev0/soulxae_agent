@@ -1,12 +1,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 import os
+from typing import Generator
 
-class SessionService:
-    def __init__(self):
-        self.DB_URL = os.getenv("DB_URL")
-        self.engine = create_engine(self.DB_URL)
-        self.SessionLocal = sessionmaker(bind=self.engine)
+DB_URL = os.getenv("DB_URL")
+engine = create_engine(DB_URL, pool_pre_ping=True)  
+SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
-    def get_session(self) -> Session:
-        return self.SessionLocal()
+def get_db_session() -> Generator[Session, None, None]:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

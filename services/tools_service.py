@@ -1,4 +1,4 @@
-from ..dependencies.embedding_service import embedding_service
+from ..dependencies.container import embedding_service
 from ..tools.tool_registry import tool_registry
 from typing import List
 
