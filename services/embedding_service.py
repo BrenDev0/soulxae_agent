@@ -22,7 +22,7 @@ class EmbeddingService:
 
 
     async def add_tool(self, tool_id: str, description: str, metadata: Dict = {}):
-        embedding = self.get_embedding(description)
+        embedding = await self.get_embedding(description)
         self.tool_index.add(np.array([embedding], dtype=np.float32))
 
         index = len(self.tool_metadata)
