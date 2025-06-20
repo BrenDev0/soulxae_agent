@@ -25,5 +25,6 @@ class Container:
             session=db_session,
             embeddings_service=self.embedding_service,
             prompt_service=self.prompt_service,
-            tools_service=ToolsService
+            redis_service=self.redis_service,
+            tools_service=self.tools_service
         )
