@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from tools.tool_registry import tool_registry
 from models.db.models import Agent_Tool
 from typing import List
+from langchain.tools import Tool
 
 class ToolsService: 
     def __init__(
@@ -16,11 +17,12 @@ class ToolsService:
 
     def configure_tools(self):
         print("configuring tools")
-        for tool in tool_registry:
+        for tool_id, tool in self.tool_registry.items():
             self.embedding_service.add_tool(
-                name=tool.name,
+                tool_id=tool_id,
                 description=tool.description
             )
+
         print("Tools configured")
     
     def get_agents_tools(self, agent_id: str) -> List[str]: 
@@ -30,9 +32,19 @@ class ToolsService:
             tool.tool_id for tool in tools
         ]
     
-    def get_tools_for_model(self, tool_ids: List[str]): 
-        return [
-            self.tool_registry[tool_id]
-            for tool_id in tool_ids
-            if tool_id in self.tool_registry
-        ]
+    def get_tools_for_model(self, tool_ids: List[str]) -> List[Tool]:
+        tools = []
+
+        for tool_id in tool_ids:
+            if tool_id in self.tool_registry:
+                tool_def = self.tool_registry[tool_id]
+
+                tools.append(
+                    Tool.from_function(
+                        func=tool_def.func,    
+                        name=tool_def.name,          
+                        description=tool_def.description  
+                    )
+                )
+
+        return tools

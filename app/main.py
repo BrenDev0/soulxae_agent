@@ -14,7 +14,8 @@ origins = [
     "http://localhost:3000",
     "soulxae.up.railway.app"
 ]
-session = get_db_session()
+
+session = next(get_db_session()) 
 
 Container = Container(db_session=session)
 Container.tools_service.configure_tools()

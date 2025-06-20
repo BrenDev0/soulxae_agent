@@ -21,13 +21,13 @@ class EmbeddingService:
         return vectors
 
 
-    def add_tool(self, name: str, description: str, metadata: Dict = {}):
+    def add_tool(self, tool_id: str, description: str, metadata: Dict = {}):
         embedding = self.get_embedding(description)
         self.tool_index.add(np.array([embedding], dtype=np.float32))
 
         index = len(self.tool_metadata)
         self.tool_metadata[index] = {
-            "name": name,
+            "tool_id": tool_id,
             "description": description,
             **metadata
         }
@@ -43,9 +43,9 @@ class EmbeddingService:
             score = 1 / (1 + dist)
             if score >= threshold:
                 metadata = self.tool_metadata.get(idx, {})
-                tool_name = metadata.get("name")
+                tool_id = metadata.get("tool_id")
 
-                if tool_name:
-                    results.append(tool_name)
+                if tool_id:
+                    results.append(tool_id)
 
         return results

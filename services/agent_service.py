@@ -7,6 +7,7 @@ from models.models import LLMConfig
 from typing import List
 from sqlalchemy.orm import Session
 from langchain_openai import ChatOpenAI
+from langchain.agents import initialize_agent, AgentType
 
 class AgentService:
     def __init__(
@@ -26,8 +27,11 @@ class AgentService:
     
     async def get_config(self, agent_id: str, conversation_id: str, token: str, input: str) -> LLMConfig:
         agent = self.session.query(Agent).filter_by(agent_id=agent_id).first()
+        if not agent:
+            raise ValueError(f"Agent with ID {agent_id} not found.")
         
         tools_needed = self.embeddings_service.search_tool(input)
+        
         agent_tools = self.tools_service.get_agents_tools(agent_id=agent_id)
 
         tool_ids = []
@@ -45,8 +49,7 @@ class AgentService:
 
         prompt = self.prompt_service.build_prompt_template(
             system_prompt=agent.system_prompt, 
-            chat_history=chat_history,
-            tool_ids=tool_ids
+            chat_history=chat_history
         )
 
         if len(tool_ids) != 0:
@@ -73,16 +76,19 @@ class AgentService:
 
         prompt = config["prompt"].format(input=input)
 
-        llm = ChatOpenAI(
-            model="gpt-4o",
-            temperature=config["temperature"],
-            max_tokens=config["max_tokens"],
+        agent = initialize_agent(
             tools=config["tools"],
-            timeout=None,
-            max_retries=2
+            llm=ChatOpenAI(
+                model="gpt-4o",
+                temperature=config["temperature"],
+                max_tokens=config["max_tokens"],
+                timeout=None,
+                max_retries=2
+            ),
+            agent=AgentType.OPENAI_FUNCTIONS
         )
-
-        response = await  llm.ainvoke(prompt)
+       
+        response = await  agent.ainvoke(prompt)
 
         return response.content
 
