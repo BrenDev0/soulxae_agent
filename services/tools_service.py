@@ -15,11 +15,13 @@ class ToolsService:
         self.tool_registry = tool_registry
 
     def configure_tools(self):
+        print("configuring tools")
         for tool in tool_registry:
             self.embedding_service.add_tool(
                 tool_id=tool["id"],
                 description=tool["description"]
             )
+        print("Tools configured")
     
     def get_agents_tools(self, agent_id: str) -> List[str]: 
         tools = self.session.query(Agent_Tool).filter_by(agent_id=agent_id).all()

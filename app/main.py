@@ -4,13 +4,18 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from routes import interact
+from dependencies.container import Container
 
 
 app = FastAPI()
 
 origins = [
     "http://localhost:3000",
+    "soulxae.up.railway.app"
 ]
+
+Container = Container()
+Container.tools_service.configure_tools()
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,10 +24,6 @@ app.add_middleware(
     allow_methods=["*"],  
     allow_headers=["*"], 
 )
-
-@app.get("/", response_class=JSONResponse)
-async def home():
-    return JSONResponse(status_code=200, content="hola");
 
 app.include_router(interact.router)
 
