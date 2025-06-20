@@ -1,4 +1,4 @@
-from agent_handoff import agent_handoff
+from tools.agent_handoff import agent_handoff
 
 tool_registry = {
     "uuidoftool": {
