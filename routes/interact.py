@@ -16,12 +16,13 @@ def get_container(db: Session = Depends(get_db_session)) -> Container:
 middleware_service = MiddlewareService()
 
 @router.post("/interact", response_class=JSONResponse)
-async def createComponent(
+async def interact(
     backgroundTasks: BackgroundTasks,
     data: InteractionRequest = Body(...),
     container: Container = Depends(get_container),
     _: None = Depends(middleware_service.auth)
 ):
+    print(data.conversation_id)
+    print(data.agent_id)
     
-    
-    return JSONResponse(status_code=200, content=data);
+    return JSONResponse(status_code=200, content="recived");
