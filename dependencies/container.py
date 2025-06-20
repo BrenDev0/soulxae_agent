@@ -9,7 +9,10 @@ from services.tools_service import ToolsService
 class Container:
     def __init__(self, db_session: Session):
         self.embedding_service = EmbeddingService()
-        self.tools_service = ToolsService()
+        self.tools_service = ToolsService(
+            session=db_session,
+            embedding_service=EmbeddingService
+        )
 
         self.redis_service = RedisService()
 
