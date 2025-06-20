@@ -18,8 +18,8 @@ class ToolsService:
         print("configuring tools")
         for tool in tool_registry:
             self.embedding_service.add_tool(
-                tool_id=tool["id"],
-                description=tool["description"]
+                name=tool.name,
+                description=tool.description
             )
         print("Tools configured")
     

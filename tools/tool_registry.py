@@ -1,8 +1,3 @@
-from tools.agent_handoff import agent_handoff
+from tools.agent_handoff import agent_handoff_tool
 
-tool_registry = {
-    "uuidoftool": {
-        "handler": agent_handoff,
-        "description": "User has requested or expressed interest in speaking to a human representative"
-    }
-}
+tool_registry = [agent_handoff_tool]
