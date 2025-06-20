@@ -8,11 +8,14 @@ from services.prompt_service import PromptService
 class Container:
     def __init__(self, db_session: Session):
         self.embedding_service = EmbeddingService()
+
         self.redis_service = RedisService()
+
         self.prompt_service = PromptService(
             session=db_session,
             redis_service=self.redis_service
         )
+        
         self.agent_service = AgentService(
             session=db_session,
             embeddings_service=self.embedding_service,

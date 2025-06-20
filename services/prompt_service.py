@@ -40,7 +40,12 @@ class PromptService:
         ]
 
 
-    def build_prompt_template(self, system_prompt: str, chat_history: List[Dict], tool_ids: Optional[List[str]] = None): 
+    def build_prompt_template(
+            self, 
+            system_prompt: str, 
+            chat_history: List[Dict], 
+            tool_ids: Optional[List[str]] = None
+        ): 
         messages = [
             SystemMessagePromptTemplate.from_template(system_prompt),
         ]

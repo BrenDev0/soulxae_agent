@@ -1,23 +1,36 @@
-from dependencies.container import embedding_service
+from services.embedding_service import EmbeddingService
+from sqlalchemy.orm import Session
 from tools.tool_registry import tool_registry
+from models.db.models import Agent_Tool
 from typing import List
 
 class ToolsService: 
-    def __init__(self):
-        self.ebedding_service = embedding_service
-        self.tool_resgisty = tool_registry
+    def __init__(
+            self, 
+            session: Session,
+            embedding_service: EmbeddingService
+        ):
+        self.session = session
+        self.embedding_service = embedding_service
+        self.tool_registry = tool_registry
 
     def configure_tools(self):
         for tool in tool_registry:
-            embedding_service.add_tool(
+            self.embedding_service.add_tool(
                 tool_id=tool["id"],
                 description=tool["description"]
             )
     
-    def get_agents_tools(self, tool_ids: List[str]): 
-        tools = []
-
-        for tool in tool_ids:
-            tools.append(self.tool_resgisty[tool])
-
-        return tools
+    def get_agents_tools(self, agent_id: str) -> List[str]: 
+        tools = self.session.query(Agent_Tool).filter_by(agent_id=agent_id).all()
+        
+        return [
+            tool.tool_id for tool in tools
+        ]
+    
+    def get_tools_for_model(self, tool_ids: List[str]): 
+        return [
+            self.tool_registry[tool_id]
+            for tool_id in tool_ids
+            if tool_id in self.tool_registry
+        ]

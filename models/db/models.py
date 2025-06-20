@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, ForeignKey, Integer, Float
+from sqlalchemy import Column, String, Text, ForeignKey, Integer, Float, PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -32,6 +32,16 @@ class Agent(Base):
     greeting_message = Column(Text)
     max_tokens = Column(Integer)
     temperature = Column(Float)
+
+class Agent_Tool(Base):
+    __tablename__ = 'agent_tools'
+    agent_id = Column(String, ForeignKey('agents.agent_id'))
+    tool_id = Column(String, ForeignKey('tools.tool_id'))
+
+    __table_args__ = (
+        PrimaryKeyConstraint('agent_id', 'tool_id'),
+    )
+    
 
 
     
