@@ -21,7 +21,7 @@ class MiddlewareService:
     
     def verify_token(self, token):
         try:
-            payload = jwt.decode(token, self.SECRET_KEY, algorithms=["HS256"])
+            payload = jwt.decode(token, self.TOKEN_KEY, algorithms=["HS256"])
             return payload
         
         except jwt.ExpiredSignatureError:
