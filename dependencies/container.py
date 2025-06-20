@@ -4,10 +4,12 @@ from services.embedding_service import EmbeddingService
 from services.agent_service import AgentService
 from services.redis_service import RedisService
 from services.prompt_service import PromptService
+from services.tools_service import ToolsService
 
 class Container:
     def __init__(self, db_session: Session):
         self.embedding_service = EmbeddingService()
+        self.tools_service = ToolsService()
 
         self.redis_service = RedisService()
 
@@ -20,4 +22,5 @@ class Container:
             session=db_session,
             embeddings_service=self.embedding_service,
             prompt_service=self.prompt_service,
+            tools_service=ToolsService
         )
