@@ -8,10 +8,10 @@ from functools import partial
 
 class ToolsService: 
     def __init__(
-            self, 
-            session: Session,
-            embedding_service: EmbeddingService
-        ):
+        self, 
+        session: Session,
+        embedding_service: EmbeddingService
+    ):
         self.session = session
         self.embedding_service = embedding_service
         self.tool_registry = tool_registry
@@ -21,7 +21,7 @@ class ToolsService:
         for tool_id, tool in self.tool_registry.items():
             self.embedding_service.add_tool(
                 tool_id=tool_id,
-                description=tool.description
+                description=tool.description,
             )
 
         print("Tools configured")

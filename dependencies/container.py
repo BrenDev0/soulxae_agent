@@ -11,7 +11,7 @@ class Container:
         self.embedding_service = EmbeddingService()
         self.tools_service = ToolsService(
             session=db_session,
-            embedding_service=EmbeddingService
+            embedding_service=self.embedding_service
         )
 
         self.redis_service = RedisService()
