@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional, List
+from typing import Optional, List, Any
 
 class InteractionRequest(BaseModel):
     agent_id: str;
@@ -7,6 +7,6 @@ class InteractionRequest(BaseModel):
 
 class LLMConfig(BaseModel):
     prompt: str;
-    tools: List[any];
+    tools: List[Any];
     max_tokens: int;
     temperature: float
