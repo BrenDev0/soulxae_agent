@@ -23,8 +23,13 @@ class EmbeddingService:
 
     async def add_tool(self, tool_id: str, description: str, metadata: Dict = {}):
         embedding = await self.get_embedding(description)
+        embedding_array = np.array(embedding, dtype=np.float32).reshape(1, -1)
+
+        # Optional check
+        assert embedding_array.shape[1] == self.tool_index.d, \
+            f"Embedding dimension mismatch: expected {self.tool_index.d}, got {embedding_array.shape[1]}"
         
-        self.tool_index.add(np.array([embedding], dtype=np.float32))
+        self.tool_index.add(embedding_array)
 
         index = len(self.tool_metadata)
         self.tool_metadata[index] = {
@@ -35,7 +40,9 @@ class EmbeddingService:
 
     async def search_tool(self, query: str, tok_k: int = 3, threshold: float = 0.8) -> List[Dict]:
         query_embedding = await self.get_embedding(query)
-        D, I = self.tool_index.search(np.array([query_embedding], dtype=np.float32), tok_k)
+        query_array = np.array(query_embedding, dtype=np.float32).reshape(1, -1)
+        D, I = self.tool_index.search(query_array, tok_k)
+
 
         results = []
         for idx, dist in zip([I[0]], D[0]):
