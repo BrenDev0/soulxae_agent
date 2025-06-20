@@ -18,7 +18,7 @@ class EmbeddingService:
 
     async def get_embedding(self,  text: str) -> List[float]: 
         vectors = await self.model.aembed_query(text)
-        return vectors
+        return vectors[0]
 
 
     async def add_tool(self, tool_id: str, description: str, metadata: Dict = {}):
