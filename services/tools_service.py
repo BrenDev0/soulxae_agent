@@ -4,6 +4,7 @@ from tools.tool_registry import tool_registry
 from models.db.models import Agent_Tool
 from typing import List
 from langchain.tools import Tool
+from functools import partial
 
 class ToolsService: 
     def __init__(
@@ -32,16 +33,24 @@ class ToolsService:
             tool.tool_id for tool in tools
         ]
     
-    def get_tools_for_model(self, tool_ids: List[str]) -> List[Tool]:
+    def get_tools_for_model(self, 
+        tool_ids: List[str],
+        conversation_id: str,
+        token: str
+    ) -> List[Tool]:
         tools = []
 
         for tool_id in tool_ids:
             if tool_id in self.tool_registry:
                 tool_def = self.tool_registry[tool_id]
+                
+                func = tool_def.func
+                if tool_def.name == "agent_handoff":
+                    func = partial(func, conversation_id=conversation_id, token=token)
 
                 tools.append(
                     Tool.from_function(
-                        func=tool_def.func,    
+                        func=func,    
                         name=tool_def.name,          
                         description=tool_def.description  
                     )
