@@ -17,7 +17,7 @@ class EmbeddingService:
         self.doc_metadata = {}
 
     async def get_embedding(self,  text: str) -> List[float]: 
-        vectors = self.model.aembed_query(text)
+        vectors = await self.model.aembed_query(text)
         return vectors
 
 
@@ -32,8 +32,8 @@ class EmbeddingService:
             **metadata
         }
 
-    def search_tool(self, query: str, tok_k: int = 3, threshold: float = 0.8) -> List[Dict]:
-        query_embedding = self.get_embedding(query)
+    async def search_tool(self, query: str, tok_k: int = 3, threshold: float = 0.8) -> List[Dict]:
+        query_embedding = await self.get_embedding(query)
         D, I = self.tool_index.search(np.array([query_embedding], dtype=np.float32), tok_k)
 
         results = []
