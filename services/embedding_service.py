@@ -18,12 +18,12 @@ class EmbeddingService:
 
     async def get_embedding(self,  text: str) -> List[float]: 
         vectors = await self.model.aembed_query(text)
-        return vectors[0]
+        return vectors
 
 
     async def add_tool(self, tool_id: str, description: str, metadata: Dict = {}):
         embedding = await self.get_embedding(description)
-        print(f"{embedding}::::::::::::: embedding")
+        
         self.tool_index.add(np.array([embedding], dtype=np.float32))
 
         index = len(self.tool_metadata)
