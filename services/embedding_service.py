@@ -10,10 +10,10 @@ class EmbeddingService:
             model="text-embedding-3-large"
         )
 
-        self.tool_index = faiss.IndexFlat(1536)
+        self.tool_index = faiss.IndexFlat(3072)
         self.tool_metadata = {}
 
-        self.doc_index = faiss.IndexFlat(1536)
+        self.doc_index = faiss.IndexFlat(3072)
         self.doc_metadata = {}
 
     async def get_embedding(self,  text: str) -> List[float]: 
