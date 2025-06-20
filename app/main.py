@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes import interact
 from dependencies.container import Container
 from database.sessions import get_db_session
+import asyncio
 
 
 app = FastAPI()
@@ -18,7 +19,7 @@ origins = [
 session = next(get_db_session()) 
 
 Container = Container(db_session=session)
-Container.tools_service.configure_tools()
+asyncio.run(Container.tools_service.configure_tools())
 
 app.add_middleware(
     CORSMiddleware,

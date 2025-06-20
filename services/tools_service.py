@@ -16,10 +16,10 @@ class ToolsService:
         self.embedding_service = embedding_service
         self.tool_registry = tool_registry
 
-    def configure_tools(self):
+    async def configure_tools(self):
         print("configuring tools")
         for tool_id, tool in self.tool_registry.items():
-            self.embedding_service.add_tool(
+            await self.embedding_service.add_tool(
                 tool_id=tool_id,
                 description=tool.description,
             )

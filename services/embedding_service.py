@@ -16,12 +16,12 @@ class EmbeddingService:
         self.doc_index = faiss.IndexFlat(1536)
         self.doc_metadata = {}
 
-    def get_embedding(self,  text: str) -> List[float]: 
+    async def get_embedding(self,  text: str) -> List[float]: 
         vectors = self.model.aembed_query(text)
         return vectors
 
 
-    def add_tool(self, tool_id: str, description: str, metadata: Dict = {}):
+    async def add_tool(self, tool_id: str, description: str, metadata: Dict = {}):
         embedding = self.get_embedding(description)
         self.tool_index.add(np.array([embedding], dtype=np.float32))
 

@@ -30,7 +30,7 @@ class AgentService:
         if not agent:
             raise ValueError(f"Agent with ID {agent_id} not found.")
         
-        tools_needed = self.embeddings_service.search_tool(input)
+        tools_needed = await self.embeddings_service.search_tool(input)
         
         agent_tools = self.tools_service.get_agents_tools(agent_id=agent_id)
 
@@ -70,8 +70,7 @@ class AgentService:
             agent_id=agent_id,
             conversation_id=conversation_id,
             input=input,
-            token=token,
-        
+            token=token
         )
 
         prompt = config["prompt"].format(input=input)
