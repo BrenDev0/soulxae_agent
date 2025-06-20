@@ -14,6 +14,7 @@ class Container:
             redis_service=self.redis_service
         )
         self.agent_service = AgentService(
+            session=db_session,
             embeddings_service=self.embedding_service,
             prompt_service=self.prompt_service,
         )
