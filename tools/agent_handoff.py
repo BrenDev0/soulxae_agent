@@ -17,6 +17,7 @@ async def agent_handoff(conversation_id: str, token: str) -> dict:
 
 agent_handoff_tool = Tool(
     tool_id="agent_handoff",
+    name="agent_handoff",
     func=agent_handoff,
     description=(
         "Use this tool if the client expresses interest in speaking to a human representative, "
