@@ -16,7 +16,7 @@ class MiddlewareService:
         token = auth_header.split(" ")[1]
         self.verify_token(token)
 
-        return
+        return token
         
     
     def verify_token(self, token):

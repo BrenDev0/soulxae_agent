@@ -20,11 +20,13 @@ async def interact(
     backgroundTasks: BackgroundTasks,
     data: InteractionRequest = Body(...),
     container: Container = Depends(get_container),
-    _: None = Depends(middleware_service.auth)
+    token: str = Depends(middleware_service.auth)
 ):
     response = await container.agent_service.interact(
         conversation_id=data.conversation_id,
-        agent_id=data.agent_id
+        agent_id=data.agent_id,
+        input=data.input,
+        token=token
     )
 
     print(response)
