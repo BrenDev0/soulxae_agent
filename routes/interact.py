@@ -3,15 +3,14 @@ from fastapi.responses import JSONResponse
 from middleware.middleware_service import MiddlewareService
 from sqlalchemy.orm import Session
 from dependencies.container import Container
-from database.sessions import get_db_session
 from models.models import InteractionRequest
+
 
 router = APIRouter(
     prefix="/api/agent",
     tags=["Agent"]
 )
-def get_container(db: Session = Depends(get_db_session)) -> Container:
-    return Container(db)
+
 
 middleware_service = MiddlewareService()
 
@@ -19,10 +18,11 @@ middleware_service = MiddlewareService()
 async def interact(
     backgroundTasks: BackgroundTasks,
     data: InteractionRequest = Body(...),
-    container: Container = Depends(get_container),
     token: str = Depends(middleware_service.auth)
 ):
-    response = await container.agent_service.interact(
+    
+    agent_service = Container.resolve("agent_service")
+    response = await agent_service.interact(
         conversation_id=data.conversation_id,
         agent_id=data.agent_id,
         input=data.input,

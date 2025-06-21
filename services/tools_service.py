@@ -30,7 +30,7 @@ class ToolsService:
         tools = self.session.query(Agent_Tool).filter_by(agent_id=agent_id).all()
         
         return [
-            tool.tool_id for tool in tools
+            str(tool.tool_id) for tool in tools
         ]
     
     def get_tools_for_model(self, 

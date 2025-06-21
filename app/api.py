@@ -4,19 +4,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes import interact
 from dependencies.container import Container
 from database.sessions import get_db_session
-from app.main import Main  
+from app.config import Config  
 
-
-
-session = next(get_db_session())
-Container = Container(db_session=session)
-main_app = Main(container=Container)
+config = Config
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await main_app.on_startup()  
+    await config.on_startup()  
     yield
-    await main_app.on_shutdown() 
+    await config.on_shutdown() 
 
 app = FastAPI(lifespan=lifespan)
 

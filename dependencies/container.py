@@ -1,29 +1,22 @@
-# dependencies/container.py
-from sqlalchemy.orm import Session
-from services.embedding_service import EmbeddingService
-from services.agent_service import AgentService
-from services.redis_service import RedisService
-from services.prompt_service import PromptService
-from services.tools_service import ToolsService
+from typing import TypeVar, Generic, Dict, Type, Any
+
+T = TypeVar('T')
 
 class Container:
-    def __init__(self, db_session: Session):
-        self.embedding_service = EmbeddingService()
-        self.tools_service = ToolsService(
-            session=db_session,
-            embedding_service=self.embedding_service
-        )
+    _instances: Dict[str, Any] = {}
 
-        self.redis_service = RedisService()
+    @classmethod
+    def register(cls, key: str, instance: Any) -> None:
+        cls._instances[key] = instance
 
-        self.prompt_service = PromptService(
-            session=db_session
-        )
-        
-        self.agent_service = AgentService(
-            session=db_session,
-            embeddings_service=self.embedding_service,
-            prompt_service=self.prompt_service,
-            redis_service=self.redis_service,
-            tools_service=self.tools_service
-        )
+    @classmethod
+    def resolve(cls, key: str) -> Any:
+        if key not in cls._instances:
+            raise ValueError(f"Dependency '{key}' not found!")
+        return cls._instances[key]
+
+    @classmethod
+    def clear(cls) -> None:
+        cls._instances.clear()
+
+

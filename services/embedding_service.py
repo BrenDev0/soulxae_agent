@@ -7,6 +7,7 @@ import faiss
 
 class EmbeddingService:
     def __init__(self):
+        print("init embedding")
         self.model = OpenAIEmbeddings(model="text-embedding-3-large")
         
         dimension = 3072
@@ -32,16 +33,17 @@ class EmbeddingService:
         )
         self.tool_store.add_documents([doc])
         self._tools_added += 1
-        print(doc)
+        print(self._tools_added)
 
-    async def search_tool(self, query: str, top_k: int = 3, threshold: float = 0.8) -> List[str]:
+    async def search_tool(self, query: str, top_k: int = 3, threshold: float = 0.3) -> List[str]:
         print(f"query::::: {query}")
+        print(self._tools_added)
         if self._tools_added == 0:
             print("no tools")
             print(self._tools_added)
             return []
 
-        results = await self.tool_store.asimilarity_search_with_score(query, k=top_k)
+        results = self.tool_store.similarity_search_with_score(query, k=top_k)
 
         matches = []
         for doc, score in results:
