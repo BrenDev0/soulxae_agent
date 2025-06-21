@@ -6,7 +6,6 @@ from typing import List, Dict
 class PromptService:
     def __init__(self, session: Session, redis_service):
         self.session = session
-        self.redis_service = redis_service 
 
     def build_prompt_template(
             self, 

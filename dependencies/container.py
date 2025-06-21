@@ -17,8 +17,7 @@ class Container:
         self.redis_service = RedisService()
 
         self.prompt_service = PromptService(
-            session=db_session,
-            redis_service=self.redis_service
+            session=db_session
         )
         
         self.agent_service = AgentService(

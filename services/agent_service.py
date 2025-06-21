@@ -75,7 +75,7 @@ class AgentService:
         print(config["prompt"])
         print(config["tools"])
 
-        prompt = config.prompt.format(input=input)
+        prompt = config["prompt"].format(input=input)
 
         agent = initialize_agent(
             tools=config["tools"],
