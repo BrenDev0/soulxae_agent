@@ -77,20 +77,24 @@ class AgentService:
 
         prompt = config["prompt"].format(input=input)
 
-        agent = initialize_agent(
-            tools=config["tools"],
-            llm=ChatOpenAI(
-                model="gpt-4o",
-                temperature=config["temperature"],
-                max_tokens=config["max_tokens"],
-                timeout=None,
-                max_retries=2
-            ),
-            agent=AgentType.OPENAI_FUNCTIONS
+        llm = ChatOpenAI(
+            model="gpt-4o",
+            temperature=config["temperature"],
+            max_tokens=config["max_tokens"],
+            timeout=None,
+            max_retries=2
         )
-       
-        response = await  agent.ainvoke(prompt)
 
+        if config["tools"]:
+            agent = initialize_agent(
+                tools=config["tools"],
+                llm=llm,
+                agent=AgentType.OPENAI_FUNCTIONS
+            )
+        else:
+            agent = llm
+
+        response = await agent.ainvoke(prompt)
         return response.content
 
 
