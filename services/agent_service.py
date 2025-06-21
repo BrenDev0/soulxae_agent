@@ -31,6 +31,8 @@ class AgentService:
             raise ValueError(f"Agent with ID {agent_id} not found.")
         
         tools_needed = await self.embeddings_service.search_tool(input)
+        print(f"🔍 Tools needed for input: {tools_needed}")
+
         
         agent_tools = self.tools_service.get_agents_tools(agent_id=agent_id)
 
