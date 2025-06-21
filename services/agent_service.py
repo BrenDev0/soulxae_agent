@@ -7,7 +7,7 @@ from models.models import LLMConfig
 from typing import List
 from sqlalchemy.orm import Session
 from langchain_openai import ChatOpenAI
-from langchain.agents import initialize_agent, AgentType
+from langchain.agents import AgentExecutor, create_openai_functions_agent
 
 class AgentService:
     def __init__(
@@ -76,7 +76,9 @@ class AgentService:
         print(config["prompt"])
         print(config["tools"])
 
-        prompt = config["prompt"].format(input=input)
+        prompt_template = config["prompt"]
+        tools = config["tools"]
+        formatted_messages = prompt_template.format_messages(input=input)
 
         llm = ChatOpenAI(
             model="gpt-4o",
@@ -86,17 +88,14 @@ class AgentService:
             max_retries=2
         )
 
-        if config["tools"]:
-            agent = initialize_agent(
-                tools=config["tools"],
-                llm=llm,
-                agent=AgentType.OPENAI_FUNCTIONS
-            )
+        if tools:
+            agent = create_openai_functions_agent(llm=llm, tools=tools, prompt=prompt_template)
+            executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+            response = await executor.ainvoke({"input": input})
         else:
-            agent = llm
+            response = await llm.ainvoke(formatted_messages)
 
-        response = await agent.ainvoke(prompt)
-        return response.content
+        return response["output"] if tools else response.content
 
 
 
