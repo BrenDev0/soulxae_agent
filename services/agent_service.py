@@ -35,6 +35,7 @@ class AgentService:
 
         
         agent_tools = self.tools_service.get_agents_tools(agent_id=agent_id)
+        print(f"🔍 agents tools: {agent_tools}")
 
         tool_ids = []
         tools_for_model = []
