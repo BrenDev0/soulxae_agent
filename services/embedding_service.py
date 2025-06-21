@@ -45,7 +45,7 @@ class EmbeddingService:
 
 
         results = []
-        for idx, dist in zip([I[0]], D[0]):
+        for idx, dist in zip(I[0], D[0]):
             if idx == -1:
                 continue
             score = 1 / (1 + dist)
