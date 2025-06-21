@@ -13,15 +13,15 @@ class PromptService:
             chat_history: List[Dict]
         ): 
         messages = [
-            SystemMessagePromptTemplate(system_prompt),
-            SystemMessagePromptTemplate("IMPORTANT! you will always respond in the language of the input")
+            SystemMessagePromptTemplate(prompt=system_prompt),
+            SystemMessagePromptTemplate(prompt="IMPORTANT! you will always respond in the language of the input")
         ]
         
         for msg in chat_history:
             if msg["sender"] == "client":
-                messages.append(HumanMessagePromptTemplate(msg["text"]))
+                messages.append(HumanMessagePromptTemplate(prompt=msg["text"]))
             elif msg["sender"] == "agent":
-                messages.append(SystemMessagePromptTemplate(msg["text"]))
+                messages.append(SystemMessagePromptTemplate(prompt=msg["text"]))
         
         messages.append(HumanMessagePromptTemplate.from_template('{input}'))
 
