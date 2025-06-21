@@ -10,8 +10,6 @@ class Tool(Base):
     name = Column(String)
     
 
-    examples = relationship("Example", back_populates="Tool")
-
 
 class Agent(Base):
     __tablename__ = 'agents'
