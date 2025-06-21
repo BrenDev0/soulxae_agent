@@ -9,7 +9,7 @@ class EmbeddingService:
     def __init__(self):
         self.model = OpenAIEmbeddings(model="text-embedding-3-large")
         
-        dimension = 3027
+        dimension = 3072
         index = faiss.IndexFlatIP(dimension)
         
         docstore = InMemoryDocstore({})
