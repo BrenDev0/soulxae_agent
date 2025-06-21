@@ -22,7 +22,9 @@ async def interact(
     container: Container = Depends(get_container),
     _: None = Depends(middleware_service.auth)
 ):
-    print(data.conversation_id)
-    print(data.agent_id)
+    await container.agent_service.interact(
+        conversation_id=data.conversation_id,
+        agent_id=data.agent_id
+    )
     
     return JSONResponse(status_code=200, content="recived");
