@@ -45,7 +45,11 @@ class AgentService:
                     tool_ids.append(tool_id)
         
         if len(tool_ids) != 0:
-            tools_for_model = self.tools_service.get_tools_for_model(tool_ids)
+            tools_for_model = self.tools_service.get_tools_for_model(
+                tool_ids=tool_ids,
+                conversation_id=conversation_id,
+                token=token
+            )
                     
 
         chat_history = await self.redis_service.get_session(f"conversation:{conversation_id}")
@@ -55,12 +59,6 @@ class AgentService:
             chat_history=chat_history
         )
 
-        if len(tool_ids) != 0:
-            prompt = prompt.format(
-                conversation_id=conversation_id,
-                token=token
-            )
-        
         return {
             "prompt": prompt,
             "tools": tools_for_model,

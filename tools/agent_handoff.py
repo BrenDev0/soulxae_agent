@@ -1,7 +1,7 @@
 from langchain.tools import Tool
 import httpx
 
-async def agent_handoff(conversation_id: str, token: str) -> dict:
+async def agent_handoff(*,conversation_id: str, token: str) -> dict:
     url = f"https://soulxae.up.railway.app/conversations/{conversation_id}/agent-handoff?status=true"
     headers = {"Authorization": f"Bearer {token}"}
 
@@ -19,9 +19,10 @@ agent_handoff_tool = Tool(
     tool_id="ee9f7c84-0a88-4bea-a6b1-e4e8dfa55c5a",
     name="agent_handoff",
     func=agent_handoff,
+    coroutine=agent_handoff,
     description=(
         "Use this tool if the client expresses interest in speaking to a human representative, "
-        "or if a human should handle the conversation.\n\n"
+        "or if a human should handle the conversation. you will let the client know youve handed off the conversation and the representive will resume the conversation at the ealriest convienence\n\n"
         "Required arguments:\n"
         "- conversation_id (e.g. '0fb1a939-e56f-4cc6-bf64-41ecd7451459')\n"
         "- token (e.g. 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55SWQiOjE3LCJpYXQiOjE3NTAzNTM5OTIsImV4cCI6MTc1MDk1ODc5Mn0.vQXZa8qJdJVlXw6VdMCZVTEzuvsuP4_x1J1-zRp6aFE')\n\n"
