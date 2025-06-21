@@ -1,7 +1,8 @@
 from typing import List, Dict
 from langchain.schema import Document
 from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS 
+from langchain.docstore import InMemoryDocstore
 import faiss
 
 class EmbeddingService:
@@ -11,8 +12,16 @@ class EmbeddingService:
         dimension = 1536
         index = faiss.IndexFlatIP(dimension)
         
-        index_to_docstore_id = {}  
-        self.tool_store = FAISS(self.model.embed_query, index, index_to_docstore_id)
+        docstore = InMemoryDocstore({})
+
+        index_to_docstore_id = {} 
+         
+        self.tool_store = FAISS(
+            self.model.embed_query,
+            index,
+            docstore,
+            index_to_docstore_id
+        )
 
         self._tools_added = 0
 
