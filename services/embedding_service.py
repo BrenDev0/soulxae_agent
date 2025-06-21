@@ -1,13 +1,19 @@
 from typing import List, Dict
-from langchain.schema.document import Document
-from langchain.vectorstores import FAISS
+from langchain.schema import Document
 from langchain_openai import OpenAIEmbeddings
-
+from langchain_community.vectorstores import FAISS
+import faiss
 
 class EmbeddingService:
     def __init__(self):
         self.model = OpenAIEmbeddings(model="text-embedding-3-large")
-        self.tool_store = FAISS.new(embedding=self.model)
+        
+        dimension = 1536
+        
+        index = faiss.IndexFlatIP(dimension)
+        
+        self.tool_store = FAISS(self.model.embed_query, index, {})
+
         self._tools_added = 0
 
     async def add_tool(self, tool_id: str, description: str, metadata: Dict = {}):
