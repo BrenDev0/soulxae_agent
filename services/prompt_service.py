@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate,  AIMessagePromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from typing import List, Dict
 
@@ -24,8 +24,12 @@ class PromptService:
                 messages.append(AIMessage(content=msg["text"]))
         
         messages.append(HumanMessagePromptTemplate.from_template('{input}'))
+        messages.append(AIMessagePromptTemplate.from_template('{agent_scratchpad}'))
+
 
         prompt = ChatPromptTemplate.from_messages(messages)
+        print("Prompt input variables::::::", prompt.input_variables)
+
         
         return prompt
     

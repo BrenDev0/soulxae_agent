@@ -25,13 +25,16 @@ class AgentService:
         self.tools_service = tools_service
     
     
-    async def get_config(self, agent_id: str, conversation_id: str, token: str, input: str) -> LLMConfig:
+    async def get_config(self, agent_id: str, conversation_id: str, token: str) -> LLMConfig:
         agent = self.session.query(Agent).filter_by(agent_id=agent_id).first()
         if not agent:
             raise ValueError(f"Agent with ID {agent_id} not found.")
           
-        agent_tools = self.tools_service.get_agents_tools(agent_id=agent_id)
-        print(f"🔍 agents tools: {agent_tools}")    
+        agent_tools = self.tools_service.get_agents_tools(
+            agent_id=agent_id,
+            conversation_id=conversation_id,
+            token=token
+        )
 
         chat_history = await self.redis_service.get_session(f"conversation:{conversation_id}")
 
@@ -51,15 +54,11 @@ class AgentService:
         config = await self.get_config(
             agent_id=agent_id,
             conversation_id=conversation_id,
-            input=input,
             token=token
         )
-        print(config["prompt"])
-        print(config["tools"])
-
+        
         prompt_template = config["prompt"]
         tools = config["tools"]
-        formatted_messages = prompt_template.format_messages(input=input)
 
         llm = ChatOpenAI(
             model="gpt-4o",
@@ -69,13 +68,18 @@ class AgentService:
             max_retries=2
         )
 
+        
         if tools:
             agent = create_openai_functions_agent(llm=llm, tools=tools, prompt=prompt_template)
             executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-            response = await executor.ainvoke({"input": input})
+            response = await executor.ainvoke({
+                "input": input,  
+                "agent_scratchpad": ""  
+            })
         else:
+            formatted_messages = prompt_template.format_messages(input=input)
             response = await llm.ainvoke(formatted_messages)
-
+        
         return response["output"] if tools else response.content
 
 

@@ -49,20 +49,14 @@ class ToolsService:
             if tool_id in self.tool_registry:
                 tool_def = self.tool_registry[tool_id]
                 
-                func = tool_def.func
+                func = tool_def.coroutine
                 if tool_def.name == "agent_handoff":
                     func = partial(func, conversation_id=conversation_id, token=token)
-                if tool_def.name == "check_availibility":
-                    func = partial(func, token=token)
                 if tool_def.name == "make_appointmnet":
                     func = partial(func, token=token)
 
                 tools.append(
-                    Tool.from_function(
-                        func=func,    
-                        name=tool_def.name,          
-                        description=tool_def.description  
-                    )
+                    tool_def
                 )
 
         return tools
