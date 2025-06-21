@@ -26,14 +26,19 @@ class ToolsService:
 
         print("Tools configured")
     
-    def get_agents_tools(self, agent_id: str) -> List[str]: 
-        tools = self.session.query(Agent_Tool).filter_by(agent_id=agent_id).all()
-        
-        return [
-            str(tool.tool_id) for tool in tools
+    def get_agents_tools(self, agent_id: str, conversation_id: str, token: str) -> List[Tool]: 
+        availible_tools = self.session.query(Agent_Tool).filter_by(agent_id=agent_id).all()
+        tool_ids =  [
+            str(tool.tool_id) for tool in availible_tools
         ]
+        
+        return self.get_tools_from_registry(
+            tool_ids=tool_ids,
+            conversation_id=conversation_id,
+            token=token
+        )
     
-    def get_tools_for_model(self, 
+    def get_tools_from_registry(self, 
         tool_ids: List[str],
         conversation_id: str,
         token: str
@@ -47,6 +52,10 @@ class ToolsService:
                 func = tool_def.func
                 if tool_def.name == "agent_handoff":
                     func = partial(func, conversation_id=conversation_id, token=token)
+                if tool_def.name == "check_availibility":
+                    func = partial(func, token=token)
+                if tool_def.name == "make_appointmnet":
+                    func = partial(func, token=token)
 
                 tools.append(
                     Tool.from_function(

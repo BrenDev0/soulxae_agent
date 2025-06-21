@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, Dict, Type, Any
+from typing import TypeVar, Dict, Any, cast
 
 T = TypeVar('T')
 
@@ -10,13 +10,11 @@ class Container:
         cls._instances[key] = instance
 
     @classmethod
-    def resolve(cls, key: str) -> Any:
+    def resolve(cls, key: str) -> T:
         if key not in cls._instances:
             raise ValueError(f"Dependency '{key}' not found!")
-        return cls._instances[key]
+        return cast(T, cls._instances[key])
 
     @classmethod
     def clear(cls) -> None:
         cls._instances.clear()
-
-

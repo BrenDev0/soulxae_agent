@@ -1,7 +1,19 @@
-from langchain.tools import Tool
+from langchain.tools import tool
+from pydantic import BaseModel
 import httpx
 
-async def agent_handoff(*,conversation_id: str, token: str) -> dict:
+class AgentHandoffPayload(BaseModel):
+    conversation_id: str
+    token: str
+
+@tool(args_schema=AgentHandoffPayload)
+async def agent_handoff(conversation_id: str, token: str) -> dict:
+    """
+    Use this tool if the client expresses interest in speaking to a human representative,
+    or if a human should handle the conversation. You will let the client know you've
+    handed off the conversation and the representative will resume the conversation
+    at the earliest convenience.
+    """
     url = f"https://soulxae.up.railway.app/conversations/{conversation_id}/agent-handoff?status=true"
     headers = {"Authorization": f"Bearer {token}"}
 
@@ -13,20 +25,3 @@ async def agent_handoff(*,conversation_id: str, token: str) -> dict:
     except httpx.HTTPStatusError as exc:
         print(f"Agent handoff failed: {exc.response.status_code} - {exc.response.text}")
         return {"error": exc.response.text, "status_code": exc.response.status_code}
-
-
-agent_handoff_tool = Tool(
-    tool_id="ee9f7c84-0a88-4bea-a6b1-e4e8dfa55c5a",
-    name="agent_handoff",
-    func=agent_handoff,
-    coroutine=agent_handoff,
-    description=(
-        "Use this tool if the client expresses interest in speaking to a human representative, "
-        "or if a human should handle the conversation. you will let the client know youve handed off the conversation and the representive will resume the conversation at the ealriest convienence\n\n"
-        "Required arguments:\n"
-        "- conversation_id (e.g. '0fb1a939-e56f-4cc6-bf64-41ecd7451459')\n"
-        "- token (e.g. 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55SWQiOjE3LCJpYXQiOjE3NTAzNTM5OTIsImV4cCI6MTc1MDk1ODc5Mn0.vQXZa8qJdJVlXw6VdMCZVTEzuvsuP4_x1J1-zRp6aFE')\n\n"
-        "Example usage:\n"
-        "agent_handoff(conversation_id='0fb1a939-e56f-4cc6-bf64-41ecd7451459', token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55SWQiOjE3LCJpYXQiOjE3NTAzNTM5OTIsImV4cCI6MTc1MDk1ODc5Mn0.vQXZa8qJdJVlXw6VdMCZVTEzuvsuP4_x1J1-zRp6aFE')"
-    )
-)

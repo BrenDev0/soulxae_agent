@@ -29,28 +29,9 @@ class AgentService:
         agent = self.session.query(Agent).filter_by(agent_id=agent_id).first()
         if not agent:
             raise ValueError(f"Agent with ID {agent_id} not found.")
-        
-        tools_needed = await self.embeddings_service.search_tool(input)
-        print(f"🔍 Tools needed for input: {tools_needed}")
-
-        
+          
         agent_tools = self.tools_service.get_agents_tools(agent_id=agent_id)
-        print(f"🔍 agents tools: {agent_tools}")
-
-        tool_ids = []
-        tools_for_model = []
-        if len(tools_needed) != 0:
-            for tool_id in tools_needed:
-                if tool_id in agent_tools:
-                    tool_ids.append(tool_id)
-        
-        if len(tool_ids) != 0:
-            tools_for_model = self.tools_service.get_tools_for_model(
-                tool_ids=tool_ids,
-                conversation_id=conversation_id,
-                token=token
-            )
-                    
+        print(f"🔍 agents tools: {agent_tools}")    
 
         chat_history = await self.redis_service.get_session(f"conversation:{conversation_id}")
 
@@ -61,7 +42,7 @@ class AgentService:
 
         return {
             "prompt": prompt,
-            "tools": tools_for_model,
+            "tools": agent_tools,
             "max_tokens": agent.max_tokens,
             "temperature": agent.temperature
         }

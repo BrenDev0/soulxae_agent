@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List, Any
+from datetime import datetime
 
 class InteractionRequest(BaseModel):
     agent_id: str;
@@ -11,3 +12,11 @@ class LLMConfig(BaseModel):
     tools: List[Any];
     max_tokens: int;
     temperature: float
+
+class AppointmentPayload(BaseModel): 
+    token: str;
+    name: str;
+    email: str;
+    phone: str;
+    start_time: datetime
+
