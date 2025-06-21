@@ -2,6 +2,8 @@ import redis.asyncio as redis
 import json
 from typing import Any, Optional
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 class RedisService:
     def __init__(self):

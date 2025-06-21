@@ -16,7 +16,7 @@ async def agent_handoff(conversation_id: str, token: str) -> dict:
 
 
 agent_handoff_tool = Tool(
-    tool_id="agent_handoff",
+    tool_id="ee9f7c84-0a88-4bea-a6b1-e4e8dfa55c5a",
     name="agent_handoff",
     func=agent_handoff,
     description=(

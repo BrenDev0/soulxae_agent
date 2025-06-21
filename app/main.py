@@ -6,7 +6,6 @@ class Main:
     async def on_startup(self):
         print("Starting up...")
         await self.container.tools_service.configure_tools()
-        print("Tools configured.")
 
     async def on_shutdown(self):
         print("Shutting down...")

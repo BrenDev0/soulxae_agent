@@ -13,7 +13,8 @@ class PromptService:
             chat_history: List[Dict]
         ): 
         messages = [
-            SystemMessagePromptTemplate.from_template(system_prompt),
+            SystemMessagePromptTemplate(system_prompt),
+            SystemMessagePromptTemplate("IMPORTANT! you will always respond in the language of the input")
         ]
         
         for msg in chat_history:

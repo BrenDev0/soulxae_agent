@@ -1,14 +1,12 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
-
 from routes import interact
 from dependencies.container import Container
 from database.sessions import get_db_session
 from app.main import Main  
 
-load_dotenv()
+
 
 session = next(get_db_session())
 Container = Container(db_session=session)
