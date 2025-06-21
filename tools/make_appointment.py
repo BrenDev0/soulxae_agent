@@ -18,6 +18,18 @@ async def book_appointment_with_check(
     If unavailable, inform the user and ask for a new appointment_datetime.
 
     Reminder: always use `get_data` to check for existing inputs and `set_data` to store new ones.
+
+    Always follow this logic:
+
+    Call get_data to see what is already saved.
+
+    Ask the user for any missing values (name, email, phone, appointment_datetime).
+
+    When the user provides a value, call set_data to save it.
+
+    Once all values are collected, call book_appointment_with_check.
+
+    If the time is unavailable, ask the user for a new appointment time and repeat.
     """
     headers = {"Authorization": f"Bearer {token}"}
     

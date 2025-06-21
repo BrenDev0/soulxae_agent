@@ -4,6 +4,7 @@ from middleware.middleware_service import MiddlewareService
 from sqlalchemy.orm import Session
 from dependencies.container import Container
 from models.models import InteractionRequest
+from services.agent_service import AgentService
 
 
 router = APIRouter(
@@ -21,7 +22,7 @@ async def interact(
     token: str = Depends(middleware_service.auth)
 ):
     
-    agent_service = Container.resolve("agent_service")
+    agent_service: AgentService = Container.resolve("agent_service")
     response = await agent_service.interact(
         conversation_id=data.conversation_id,
         agent_id=data.agent_id,

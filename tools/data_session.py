@@ -15,7 +15,7 @@ async def get_data(conversation_id: str) -> dict:
     Check what has already been collected (name, email, phone, start_time)
     before asking the user for more information.
     """
-    redis_service = Container.resolve[RedisService]("redis_service")
+    redis_service: RedisService = Container.resolve("redis_service")
     session = redis_service.get_session(f"data_session:{conversation_id}")
     return session or {}
 
@@ -29,7 +29,7 @@ async def set_data(conversation_id: str, key: str, value: str) -> dict:
     in the session data. Call this tool immediately after the user responds with 
     any missing data.
     """
-    redis_service = Container.resolve[RedisService]("redis_service")
+    redis_service: RedisService = Container.resolve("redis_service")
     session = redis_service.get_session(f"data_session:{conversation_id}") or {}
     session[key] = value
     redis_service.set_session(f"data_session:{conversation_id}", session)
