@@ -1,59 +1,31 @@
+from typing import List, Dict
+from langchain.schema.document import Document
+from langchain.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
-import faiss
-import numpy as np
-from typing import List, Tuple, Dict, Union
-import uuid
+
 
 class EmbeddingService:
     def __init__(self):
-        self.model = OpenAIEmbeddings(
-            model="text-embedding-3-large"
-        )
+        self.model = OpenAIEmbeddings(model="text-embedding-3-large")
 
-        self.tool_index = faiss.IndexFlat(3072)
-        self.tool_metadata = {}
-
-        self.doc_index = faiss.IndexFlat(3072)
-        self.doc_metadata = {}
-
-    async def get_embedding(self,  text: str) -> List[float]: 
-        vectors = await self.model.aembed_query(text)
-        return vectors
-
+        self.tool_store = FAISS.from_documents([], self.model)  
 
     async def add_tool(self, tool_id: str, description: str, metadata: Dict = {}):
-        embedding = await self.get_embedding(description)
-        embedding_array = np.array(embedding, dtype=np.float32).reshape(1, -1)
+        doc = Document(
+            page_content=description,
+            metadata={"tool_id": tool_id, **metadata}
+        )
 
-        # Optional check
-        assert embedding_array.shape[1] == self.tool_index.d, \
-            f"Embedding dimension mismatch: expected {self.tool_index.d}, got {embedding_array.shape[1]}"
-        
-        self.tool_index.add(embedding_array)
+        self.tool_store.add_documents([doc])
 
-        index = len(self.tool_metadata)
-        self.tool_metadata[index] = {
-            "tool_id": tool_id,
-            "description": description,
-            **metadata
-        }
+    async def search_tool(self, query: str, top_k: int = 3, threshold: float = 0.8) -> List[str]:
+        results = await self.tool_store.asimilarity_search_with_score(query, k=top_k)
 
-    async def search_tool(self, query: str, tok_k: int = 3, threshold: float = 0.8) -> List[Dict]:
-        query_embedding = await self.get_embedding(query)
-        query_array = np.array(query_embedding, dtype=np.float32).reshape(1, -1)
-        D, I = self.tool_index.search(query_array, tok_k)
-
-
-        results = []
-        for idx, dist in zip(I[0], D[0]):
-            if idx == -1:
-                continue
-            score = 1 / (1 + dist)
+        matches = []
+        for doc, score in results:
             if score >= threshold:
-                metadata = self.tool_metadata.get(idx, {})
-                tool_id = metadata.get("tool_id")
-
+                tool_id = doc.metadata.get("tool_id")
                 if tool_id:
-                    results.append(tool_id)
+                    matches.append(tool_id)
 
-        return results
+        return matches
