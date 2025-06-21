@@ -72,17 +72,17 @@ class AgentService:
             input=input,
             token=token
         )
-        print(config.prompt)
-        print(config.tools)
+        print(config["prompt"])
+        print(config["tools"])
 
         prompt = config.prompt.format(input=input)
 
         agent = initialize_agent(
-            tools=config.tools,
+            tools=config["tools"],
             llm=ChatOpenAI(
                 model="gpt-4o",
-                temperature=config.temperature,
-                max_tokens=config.max_tokens,
+                temperature=config["temperature"],
+                max_tokens=config["max_tokens"],
                 timeout=None,
                 max_retries=2
             ),
