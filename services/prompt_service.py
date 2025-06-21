@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
-from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
+from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from typing import List, Dict
 
 class PromptService:
@@ -13,15 +14,15 @@ class PromptService:
             chat_history: List[Dict]
         ): 
         messages = [
-            SystemMessagePromptTemplate(prompt=system_prompt),
-            SystemMessagePromptTemplate(prompt="IMPORTANT! you will always respond in the language of the input")
+            SystemMessage(content=system_prompt),
+            SystemMessage(content="IMPORTANT! you will always respond in the language of the input")
         ]
         
         for msg in chat_history:
             if msg["sender"] == "client":
-                messages.append(HumanMessagePromptTemplate(prompt=msg["text"]))
+                messages.append(HumanMessage(content=msg["text"]))
             elif msg["sender"] == "agent":
-                messages.append(SystemMessagePromptTemplate(prompt=msg["text"]))
+                messages.append(AIMessage(content=msg["text"]))
         
         messages.append(HumanMessagePromptTemplate.from_template('{input}'))
 
