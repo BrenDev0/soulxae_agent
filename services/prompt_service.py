@@ -4,7 +4,7 @@ from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from typing import List, Dict
 
 class PromptService:
-    def __init__(self, session: Session, redis_service):
+    def __init__(self, session: Session):
         self.session = session
 
     def build_prompt_template(
