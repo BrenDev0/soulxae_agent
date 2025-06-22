@@ -59,6 +59,7 @@ class AgentService:
         
         prompt_template = config["prompt"]
         tools = config["tools"]
+        print(tools)
 
         llm = ChatOpenAI(
             model="gpt-4o",

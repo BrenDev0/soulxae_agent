@@ -56,7 +56,11 @@ class ToolsService:
                     func = partial(func, token=token)
 
                 tools.append(
-                    tool_def
+                    Tool.from_function(
+                        func=func,    
+                        name=tool_def.name,          
+                        description=tool_def.description  
+                    )
                 )
 
         return tools
