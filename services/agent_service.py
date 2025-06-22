@@ -36,11 +36,9 @@ class AgentService:
             token=token
         )
 
-        chat_history = await self.redis_service.get_session(f"conversation:{conversation_id}")
-
-        prompt = self.prompt_service.build_prompt_template(
-            system_prompt=agent.system_prompt, 
-            chat_history=chat_history
+        prompt = await self.prompt_service.build_prompt_template(
+            system_prompt=agent.system_prompt,
+            conversation_id=conversation_id
         )
 
         return {

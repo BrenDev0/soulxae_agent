@@ -63,7 +63,7 @@ class ToolsService:
                 tools.append(
                     Tool.from_function(
                         name=tool_def.name,
-                        description="Transfer to human agent (auto-filled params)",
+                        description=tool_def.description,
                         func=handoff_wrapper,  
                         coroutine=handoff_wrapper
                     )

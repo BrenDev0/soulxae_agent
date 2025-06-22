@@ -2,34 +2,38 @@ from sqlalchemy.orm import Session
 from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate,  AIMessagePromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from typing import List, Dict
+from services.redis_service import RedisService
+from models.db.models import Agent
 
 class PromptService:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session, redis_service: RedisService):
         self.session = session
+        self.redis_service = redis_service
 
-    def build_prompt_template(
+    async def build_prompt_template(
             self, 
-            system_prompt: str, 
-            chat_history: List[Dict]
+            system_prompt: str,
+            conversation_id: str
         ): 
+
         messages = [
             SystemMessage(content=system_prompt),
             SystemMessage(content="IMPORTANT! you will always respond in the language of the input")
         ]
+
+        chat_history = await self.redis_service.get_session(f"conversation:{conversation_id}")
         
-        for msg in chat_history:
-            if msg["sender"] == "client":
-                messages.append(HumanMessage(content=msg["text"]))
-            elif msg["sender"] == "agent":
-                messages.append(AIMessage(content=msg["text"]))
+        if chat_history:
+            for msg in chat_history:
+                if msg["sender"] == "client":
+                    messages.append(HumanMessage(content=msg["text"]))
+                elif msg["sender"] == "agent":
+                    messages.append(AIMessage(content=msg["text"]))
         
         messages.append(HumanMessagePromptTemplate.from_template('{input}'))
         messages.append(AIMessagePromptTemplate.from_template('{agent_scratchpad}'))
 
-
         prompt = ChatPromptTemplate.from_messages(messages)
-        print("Prompt input variables::::::", prompt.input_variables)
-
         
         return prompt
     

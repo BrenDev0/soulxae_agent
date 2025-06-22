@@ -20,7 +20,8 @@ def configure_container(db_session: Session):
     Container.register("redis_service", redis_service)
 
     prompt_service = PromptService(
-        session=db_session
+        session=db_session,
+        redis_service=redis_service
     )
     Container.register("prompt_service", prompt_service)
 
