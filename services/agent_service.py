@@ -73,6 +73,7 @@ class AgentService:
         if tools:
             agent = create_openai_functions_agent(llm=llm, tools=tools, prompt=prompt_template)
             executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+            
             response = await executor.ainvoke({
                 "input": input,  
                 "agent_scratchpad": ""  

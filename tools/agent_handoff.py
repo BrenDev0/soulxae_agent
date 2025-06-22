@@ -1,12 +1,8 @@
 from langchain_core.tools import InjectedToolArg, tool
-from pydantic import BaseModel
 import httpx
 from typing_extensions import Annotated
-class AgentHandoffPayload(BaseModel):
-    conversation_id: str
-    token: str
 
-@tool(args_schema=AgentHandoffPayload)
+@tool
 async def agent_handoff(conversation_id: Annotated[str, InjectedToolArg], token: Annotated[str, InjectedToolArg]) -> dict:
     """
     Use this tool if the client expresses interest in speaking to a human representative,

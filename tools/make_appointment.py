@@ -1,10 +1,11 @@
-from langchain.tools import tool
+from langchain_core.tools import InjectedToolArg, tool
 from datetime import datetime
 import httpx
+from typing_extensions import Annotated
 
 @tool
 async def book_appointment_with_check(
-    token: str, 
+    token: Annotated[str, InjectedToolArg], 
     name: str, 
     email: str, 
     phone: str, 

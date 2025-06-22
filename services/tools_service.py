@@ -5,6 +5,7 @@ from models.db.models import Agent_Tool
 from typing import List
 from langchain.tools import Tool
 from functools import partial
+from copy import deepcopy
 
 class ToolsService: 
     def __init__(
@@ -46,20 +47,42 @@ class ToolsService:
         tools = []
 
         for tool_id in tool_ids:
-            if tool_id in self.tool_registry:
-                tool_def = self.tool_registry[tool_id]
+            if tool_id not in self.tool_registry:
+                continue
                 
-                func = tool_def.coroutine
-                if tool_def.name == "agent_handoff":
-                    func = partial(func, conversation_id=conversation_id, token=token)
-                if tool_def.name == "make_appointmnet":
-                    func = partial(func, token=token)
-
+            tool_def = self.tool_registry[tool_id]
+            
+            if tool_def.name == "agent_handoff":
+                
+                async def handoff_wrapper(_: str = None) -> dict:
+                    return await tool_def.coroutine(
+                        conversation_id=conversation_id,
+                        token=token
+                    )
+                
                 tools.append(
                     Tool.from_function(
-                        func=func,    
-                        name=tool_def.name,          
-                        description=tool_def.description  
+                        name=tool_def.name,
+                        description="Transfer to human agent (auto-filled params)",
+                        func=handoff_wrapper,  
+                        coroutine=handoff_wrapper
+                    )
+                )
+                
+            elif tool_def.name == "make_appointment":  
+                tools.append(
+                    Tool.from_function(
+                        func=partial(tool_def.coroutine, token=token),
+                        name=tool_def.name,
+                        description=tool_def.description
+                    )
+                )
+            else:
+                tools.append(
+                    Tool.from_function(
+                        func=tool_def.coroutine,
+                        name=tool_def.name,
+                        description=tool_def.description
                     )
                 )
 
