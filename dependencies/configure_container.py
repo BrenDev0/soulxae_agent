@@ -11,8 +11,7 @@ def configure_container(db_session: Session):
     Container.register("embedding_service", embedding_service)
 
     tools_service = ToolsService(
-        session=db_session,
-        embedding_service=embedding_service
+        session=db_session
     )
     Container.register("tools_service", tools_service)
 

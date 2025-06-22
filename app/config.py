@@ -8,9 +8,6 @@ class Config:
         print("Starting up...")
         session = next(get_db_session())
         configure_container(session)
-        
-        tools_service: ToolsService = Container.resolve("tools_service")
-        await tools_service.configure_tools()
 
     async def on_shutdown():
         print("Shutting down...")

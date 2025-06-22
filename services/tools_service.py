@@ -10,22 +10,10 @@ from copy import deepcopy
 class ToolsService: 
     def __init__(
         self, 
-        session: Session,
-        embedding_service: EmbeddingService
+        session: Session
     ):
         self.session = session
-        self.embedding_service = embedding_service
         self.tool_registry = tool_registry
-
-    async def configure_tools(self):
-        print("configuring tools")
-        for tool_id, tool in self.tool_registry.items():
-            await self.embedding_service.add_tool(
-                tool_id=tool_id,
-                description=tool.description,
-            )
-
-        print("Tools configured")
     
     def get_agents_tools(self, agent_id: str, conversation_id: str, token: str) -> List[Tool]: 
         availible_tools = self.session.query(Agent_Tool).filter_by(agent_id=agent_id).all()
