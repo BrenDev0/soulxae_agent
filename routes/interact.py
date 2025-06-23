@@ -17,8 +17,9 @@ async def interact(
 ):
     user_id = request.state.user_id
     agent_service: AgentService = Container.resolve("agent_service")
+    print(data)
 
-    backgroundTasks.add_task(agent_service.interact, data.conversation_id, data.agent_id, data.input, user_id)
+    backgroundTasks.add_task(agent_service.interact, data.agent_id, data.conversation_id, user_id, data.input,)
    
     
     return JSONResponse(status_code=200, content={"message": "input recieved"});
