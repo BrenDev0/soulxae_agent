@@ -8,7 +8,7 @@ from langchain_community.document_loaders import (
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, VectorParams
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 import os
 from typing import Optional, List, Dict
 from io import BytesIO
