@@ -93,7 +93,7 @@ class AgentService:
             await self.messaging_service.send_message(
                 conversation_id=conversation_id,
                 user_id=user_id,
-                text=response.content if tools else response["output"]
+                text=response["output"] if tools else response.content
             ) 
         except Exception as e:
             print(e)
