@@ -3,7 +3,6 @@ from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplat
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from typing import List, Dict
 from services.redis_service import RedisService
-from models.db.models import Agent
 
 class PromptService:
     def __init__(self, session: Session, redis_service: RedisService):
