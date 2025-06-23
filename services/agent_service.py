@@ -83,7 +83,7 @@ class AgentService:
                 "agent_scratchpad": ""  
             })
         else:
-            formatted_messages = prompt_template.format(input=input)
+            formatted_messages = prompt_template.format(input=input,  agent_scratchpad="")
             response = await llm.ainvoke(formatted_messages)
 
         try:
