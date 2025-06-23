@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-from routes import interact
-from dependencies.container import Container
-from database.sessions import get_db_session
+from routes import interact, files
+from middleware.auth_middleware import auth_middleware
 from app.config import Config  
 
 config = Config
@@ -25,4 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.middleware("http")(auth_middleware)
+
 app.include_router(interact.router)
+app.include_router(files.router)

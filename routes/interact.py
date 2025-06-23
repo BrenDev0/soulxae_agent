@@ -12,16 +12,12 @@ router = APIRouter(
     tags=["Agent"]
 )
 
-
-middleware_service = MiddlewareService()
-
 @router.post("/interact", response_class=JSONResponse)
 async def interact(
     backgroundTasks: BackgroundTasks,
     data: InteractionRequest = Body(...),
-    token: str = Depends(middleware_service.auth)
 ):
-    
+    token = Container.resolve("middleware_-service").auth()
     agent_service: AgentService = Container.resolve("agent_service")
     response = await agent_service.interact(
         conversation_id=data.conversation_id,
