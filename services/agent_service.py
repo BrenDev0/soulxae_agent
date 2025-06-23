@@ -38,9 +38,12 @@ class AgentService:
             user_id=user_id
         )
 
+        scratch_pad_needed = bool(agent_tools)
+
         prompt = await self.prompt_service.build_prompt_template(
             system_prompt=agent_config.system_prompt,
-            conversation_id=conversation_id
+            conversation_id=conversation_id,
+            scratch_pad=scratch_pad_needed
         )
 
         return {
@@ -83,7 +86,7 @@ class AgentService:
                 "agent_scratchpad": ""  
             })
         else:
-            formatted_messages = prompt_template.format(input=input,  agent_scratchpad="")
+            formatted_messages = prompt_template.format(input=input)
             response = await llm.ainvoke(formatted_messages)
 
         try:

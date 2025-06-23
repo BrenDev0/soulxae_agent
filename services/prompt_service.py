@@ -12,7 +12,8 @@ class PromptService:
     async def build_prompt_template(
             self, 
             system_prompt: str,
-            conversation_id: str
+            conversation_id: str,
+            scratch_pad: bool
         ): 
 
         messages = [
@@ -30,7 +31,9 @@ class PromptService:
                     messages.append(AIMessage(content=msg["text"]))
         
         messages.append(HumanMessagePromptTemplate.from_template('{input}'))
-        messages.append(AIMessagePromptTemplate.from_template('{agent_scratchpad}'))
+        
+        if scratch_pad:
+            messages.append(AIMessagePromptTemplate.from_template('{agent_scratchpad}'))
 
         prompt = ChatPromptTemplate.from_messages(messages)
         
