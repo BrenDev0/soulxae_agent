@@ -2,7 +2,7 @@ from services.embedding_service import EmbeddingService
 from services.prompt_service import PromptService
 from services.redis_service import RedisService
 from services.tools_service import ToolsService
-from models.db.models import Agent
+from models.db.models import AgentConfig
 from models.models import LLMConfig
 from typing import List
 from sqlalchemy.orm import Session
@@ -25,15 +25,15 @@ class AgentService:
         self.tools_service = tools_service
     
     
-    async def get_config(self, agent_id: str, conversation_id: str, token: str) -> LLMConfig:
-        agent = self.session.query(Agent).filter_by(agent_id=agent_id).first()
+    async def get_config(self, agent_id: str, conversation_id: str, user_id: str) -> LLMConfig:
+        agent = self.session.query(AgentConfig).filter_by(agent_id=agent_id).first()
         if not agent:
             raise ValueError(f"Agent with ID {agent_id} not found.")
           
         agent_tools = self.tools_service.get_agents_tools(
             agent_id=agent_id,
             conversation_id=conversation_id,
-            token=token
+            user_id=user_id
         )
 
         prompt = await self.prompt_service.build_prompt_template(
@@ -48,11 +48,11 @@ class AgentService:
             "temperature": agent.temperature
         }
     
-    async def interact(self, agent_id: str, conversation_id: str, token: str, input: str):
+    async def interact(self, agent_id: str, conversation_id: str, user_id: str, input: str):
         config = await self.get_config(
             agent_id=agent_id,
             conversation_id=conversation_id,
-            token=token
+            user_id=user_id
         )
         
         prompt_template = config["prompt"]

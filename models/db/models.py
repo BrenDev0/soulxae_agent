@@ -11,14 +11,11 @@ class Tool(Base):
     
 
 
-class Agent(Base):
+class AgentConfig(Base):
     __tablename__ = 'agents'
-    agent_id = Column(String, primary_key=True)
-    name = Column(Text)
-    description = Column(Text)
-    user_id = Column(String, ForeignKey('users.user_id'))
+    ai_config_id = Column(String, primary_key=True)
+    agent_id = Column(String, ForeignKey('agents.agent_id'))
     system_prompt = Column(Text)
-    greeting_message = Column(Text)
     max_tokens = Column(Integer)
     temperature = Column(Float)
 

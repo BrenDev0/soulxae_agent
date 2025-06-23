@@ -1,11 +1,11 @@
-from services.embedding_service import EmbeddingService
 from sqlalchemy.orm import Session
 from tools.tool_registry import tool_registry
 from models.db.models import Agent_Tool
 from typing import List
 from langchain.tools import Tool
 from functools import partial
-from copy import deepcopy
+from dependencies.container import Container
+from services.webtoken_service import WebTokenService
 
 class ToolsService: 
     def __init__(
@@ -15,7 +15,7 @@ class ToolsService:
         self.session = session
         self.tool_registry = tool_registry
     
-    def get_agents_tools(self, agent_id: str, conversation_id: str, token: str) -> List[Tool]: 
+    def get_agents_tools(self, agent_id: str, conversation_id: str, user_id: str) -> List[Tool]: 
         availible_tools = self.session.query(Agent_Tool).filter_by(agent_id=agent_id).all()
         tool_ids =  [
             str(tool.tool_id) for tool in availible_tools
@@ -24,15 +24,18 @@ class ToolsService:
         return self.get_tools_from_registry(
             tool_ids=tool_ids,
             conversation_id=conversation_id,
-            token=token
+            user_id=user_id
         )
     
     def get_tools_from_registry(self, 
         tool_ids: List[str],
         conversation_id: str,
-        token: str
+        user_id: str
     ) -> List[Tool]:
         tools = []
+
+        webtoken_service: WebTokenService = Container.resolve("webtoken_service")
+        token = webtoken_service.generate_token({"userId": user_id}, "2m")
 
         for tool_id in tool_ids:
             if tool_id not in self.tool_registry:

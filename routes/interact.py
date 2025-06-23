@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, Body
+from fastapi import APIRouter, BackgroundTasks, Depends, Body, Request
 from fastapi.responses import JSONResponse
 from middleware.middleware_service import MiddlewareService
 from sqlalchemy.orm import Session
@@ -14,16 +14,17 @@ router = APIRouter(
 
 @router.post("/interact", response_class=JSONResponse)
 async def interact(
+    request: Request,
     backgroundTasks: BackgroundTasks,
     data: InteractionRequest = Body(...),
 ):
-    token = Container.resolve("middleware_-service").auth()
+    user_id = request.state.user_id
     agent_service: AgentService = Container.resolve("agent_service")
     response = await agent_service.interact(
         conversation_id=data.conversation_id,
         agent_id=data.agent_id,
         input=data.input,
-        token=token
+        user_id=user_id
     )
 
     print(response)
