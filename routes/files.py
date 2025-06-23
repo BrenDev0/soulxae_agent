@@ -17,8 +17,7 @@ async def upload_docs(
     agent_id: str = Body(...),
     s3_key: str = Body(...),
     file_type: str = Body(...),
-    filename: str = Body(...),
-    user_id: str = Body(...)
+    filename: str = Body(...)
 ):
     try:
         user_id = request.state.user_id
