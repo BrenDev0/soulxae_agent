@@ -11,7 +11,9 @@ class MessagingService:
 
         url = f"https://soulxae.up.railway.app/direct/secure/send"
         headers = {"Authorization": f"Bearer {token}"}
-        data = self.create_message(conversation_id=conversation_id, text=text)
+        data = {
+            "message": self.create_message(conversation_id=conversation_id, text=text)
+        }
         
         try:
             async with httpx.AsyncClient() as client:
