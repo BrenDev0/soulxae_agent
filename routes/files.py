@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Body, Request
 from fastapi.responses import JSONResponse
 from dependencies.container import Container
-from middleware.middleware_service import MiddlewareService
 from services.embedding_service import EmbeddingService
-from io import BytesIO
 
 router = APIRouter(
     prefix="/api/files",
@@ -15,13 +13,13 @@ router = APIRouter(
 async def upload_docs(
     request: Request,
     agent_id: str = Body(...),
-    s3_key: str = Body(...),
+    s3_url: str = Body(...),
     file_type: str = Body(...),
     filename: str = Body(...)
 ):
     try:
         user_id = request.state.user_id
-        s3_key = s3_key
+        s3_url = s3_url
         file_type = file_type
         filename = filename
         agent_id = agent_id
@@ -29,7 +27,7 @@ async def upload_docs(
 
         embedding_service: EmbeddingService = Container.resolve("embedding_service") 
         status = await embedding_service.embed_uploaded_document(
-            s3_key=s3_key,
+            s3_url = s3_url,
             file_type=file_type,
             filename=filename,
             user_id=user_id,
