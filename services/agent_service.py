@@ -4,10 +4,10 @@ from services.redis_service import RedisService
 from services.tools_service import ToolsService
 from models.db.models import AgentConfig
 from models.models import LLMConfig
-from typing import List
 from sqlalchemy.orm import Session
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_functions_agent
+from services.messaging_service import MessagingService
 
 class AgentService:
     def __init__(
@@ -16,13 +16,15 @@ class AgentService:
             embeddings_service: EmbeddingService, 
             prompt_service: PromptService, 
             redis_service: RedisService,
-            tools_service : ToolsService
+            tools_service : ToolsService,
+            messaging_service: MessagingService
         ):
         self.session = session
         self.embeddings_service = embeddings_service
         self.prompt_service = prompt_service
         self.redis_service = redis_service
         self.tools_service = tools_service
+        self.messaging_service = messaging_service
     
     
     async def get_config(self, agent_id: str, conversation_id: str, user_id: str) -> LLMConfig:
@@ -79,11 +81,15 @@ class AgentService:
         else:
             formatted_messages = prompt_template.format_messages(input=input)
             response = await llm.ainvoke(formatted_messages)
-        
-        return response["output"] if tools else response.content
 
-
-
-
+        try:
+            await self.messaging_service.send_message(
+                user_id=user_id,
+                text=response
+            ) 
+        except Exception as e:
+            print(e)
+            raise
+        return
 
         

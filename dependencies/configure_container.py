@@ -6,6 +6,7 @@ from services.prompt_service import PromptService
 from services.tools_service import ToolsService
 from services.webtoken_service import WebTokenService
 from middleware.middleware_service import MiddlewareService
+from services.messaging_service import MessagingService
 from dependencies.container import Container
 
 def configure_container(db_session: Session):
@@ -32,6 +33,9 @@ def configure_container(db_session: Session):
     )
     Container.register("tools_service", tools_service)
 
+    # messaging
+    messaging_service = MessagingService()
+
     # prompt
     prompt_service = PromptService(
         session=db_session,
@@ -45,7 +49,8 @@ def configure_container(db_session: Session):
         embeddings_service=embedding_service,
         prompt_service=prompt_service,
         redis_service=redis_service,
-        tools_service=tools_service
+        tools_service=tools_service,
+        messaging_service=messaging_service
     )
     Container.register("agent_service", agent_service)
 
