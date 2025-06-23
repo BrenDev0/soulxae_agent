@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, UploadFile, Depends, Form, Request
+from fastapi import APIRouter, Body, Request
 from fastapi.responses import JSONResponse
 from dependencies.container import Container
 from middleware.middleware_service import MiddlewareService
@@ -14,28 +14,32 @@ router = APIRouter(
 @router.post("/upload", response_class=JSONResponse)
 async def upload_docs(
     request: Request,
-    agent_id: str = Form(...),
-    file: UploadFile = File(...),
+    agent_id: str = Body(...),
+    s3_key: str = Body(...),
+    file_type: str = Body(...),
+    filename: str = Body(...),
+    user_id: str = Body(...)
 ):
     try:
         user_id = request.state.user_id
-        file_type = file.content_type
-        filename =  file.filename
-        file_obj = BytesIO(await file.read())
+        s3_key = s3_key
+        file_type = file_type
+        filename = filename
+        agent_id = agent_id
 
 
         embedding_service: EmbeddingService = Container.resolve("embedding_service") 
         status = await embedding_service.embed_uploaded_document(
-            file_data=file_obj,
+            s3_key=s3_key,
             file_type=file_type,
             filename=filename,
+            user_id=user_id,
             agent_id=agent_id,
-            user_id=user_id
         )
 
         print(status)
 
-        return JSONResponse(status_code=200, content={"message": "success"});
+        return JSONResponse(status_code=200, content={"message": "Document added to vector store"});
 
     except Exception as e:
         print(e)
