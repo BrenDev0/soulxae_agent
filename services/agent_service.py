@@ -91,6 +91,7 @@ class AgentService:
 
         try:
             await self.messaging_service.send_message(
+                conversation_id=conversation_id,
                 user_id=user_id,
                 text=response
             ) 
