@@ -12,7 +12,7 @@ class Tool(Base):
 
 
 class AgentConfig(Base):
-    __tablename__ = 'agents'
+    __tablename__ = 'ai_config'
     ai_config_id = Column(String, primary_key=True)
     agent_id = Column(String, ForeignKey('agents.agent_id'))
     system_prompt = Column(Text)
@@ -20,7 +20,7 @@ class AgentConfig(Base):
     temperature = Column(Float)
 
 class Agent_Tool(Base):
-    __tablename__ = 'agent_tools'
+    __tablename__ = 'ai_tools'
     agent_id = Column(String, ForeignKey('agents.agent_id'))
     tool_id = Column(String, ForeignKey('tools.tool_id'))
 
