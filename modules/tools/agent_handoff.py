@@ -1,6 +1,7 @@
 from langchain_core.tools import InjectedToolArg, tool
 import httpx
 from typing_extensions import Annotated
+import os
 
 @tool
 async def agent_handoff(conversation_id: Annotated[str, InjectedToolArg], token: Annotated[str, InjectedToolArg]) -> dict:
@@ -10,7 +11,7 @@ async def agent_handoff(conversation_id: Annotated[str, InjectedToolArg], token:
     handed off the conversation and the representative will resume the conversation
     at the earliest convenience. 
     """
-    url = f"https://soulxae.up.railway.app/conversations/{conversation_id}/agent-handoff?status=true"
+    url = f"https://{os.getenv("APP_HOST")}/conversations/secure/{conversation_id}/agent-handoff?status=true"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
