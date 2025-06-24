@@ -1,7 +1,5 @@
-from dependencies.container import Container
-from database.sessions import get_db_session
-from dependencies.configure_container import configure_container
-from services.tools_service import ToolsService
+from core.database.sessions import get_db_session
+from core.dependencies.configure_container import configure_container
 
 class Config:
     async def on_startup():

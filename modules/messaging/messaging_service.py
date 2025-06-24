@@ -1,6 +1,6 @@
 import httpx
-from dependencies.container import Container
-from services.webtoken_service import WebTokenService
+from core.dependencies.container import Container
+from core.services.webtoken_service import WebTokenService
 
 
 class MessagingService:
@@ -12,7 +12,9 @@ class MessagingService:
         url = f"https://soulxae.up.railway.app/direct/secure/send"
         headers = {"Authorization": f"Bearer {token}"}
         data = {
-            "message": self.create_message(conversation_id=conversation_id, text=text)
+            "conversationId": conversation_id,
+            "type": "text",
+            "text": text
         }
         
         try:
@@ -23,12 +25,3 @@ class MessagingService:
         except httpx.HTTPStatusError as exc:
             print(f"Unable to send message: {exc.response.status_code} - {exc.response.text}")
             return {"error": exc.response.text, "status_code": exc.response.status_code}
-
-    def create_message(self, conversation_id: str, text: str):
-        message = {
-            "conversationId": conversation_id,
-            "type": "text",
-            "text": text 
-        }
-
-        return message

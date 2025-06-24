@@ -1,13 +1,13 @@
-from services.embedding_service import EmbeddingService
-from services.prompt_service import PromptService
-from services.redis_service import RedisService
-from services.tools_service import ToolsService
-from models.db.models import AgentConfig
-from models.models import LLMConfig
+from modules.embeddings.embedding_service import EmbeddingService
+from modules.prompts.prompt_service import PromptService
+from core.services.redis_service import RedisService
+from modules.tools.tools_service import ToolsService
+from modules.agents.agents_models import AgentConfig
+from modules.agents.agents_models import LLMConfig
 from sqlalchemy.orm import Session
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_functions_agent
-from services.messaging_service import MessagingService
+from modules.messaging.messaging_service import MessagingService
 
 class AgentService:
     def __init__(

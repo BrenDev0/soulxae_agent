@@ -1,8 +1,8 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, Body, Request
 from fastapi.responses import JSONResponse
-from dependencies.container import Container
-from models.models import InteractionRequest
-from services.agent_service import AgentService
+from core.dependencies.container import Container
+from modules.agents.agents_models import InteractionRequest
+from modules.agents.agent_service import AgentService
 
 router = APIRouter(
     prefix="/api/agent",

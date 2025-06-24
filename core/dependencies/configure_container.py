@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session
-from services.embedding_service import EmbeddingService
-from services.agent_service import AgentService
-from services.redis_service import RedisService
-from services.prompt_service import PromptService
-from services.tools_service import ToolsService
-from services.webtoken_service import WebTokenService
-from middleware.middleware_service import MiddlewareService
-from services.messaging_service import MessagingService
-from dependencies.container import Container
+from modules.embeddings.embedding_service import EmbeddingService
+from modules.agents.agent_service import AgentService
+from core.services.redis_service import RedisService
+from modules.prompts.prompt_service import PromptService
+from modules.tools.tools_service import ToolsService
+from core.services.webtoken_service import WebTokenService
+from core.middleware.middleware_service import MiddlewareService
+from modules.messaging.messaging_service import MessagingService
+from core.dependencies.container import Container
 
 def configure_container(db_session: Session):
     # core   

@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
-from tools.tool_registry import tool_registry
-from models.db.models import Agent_Tool
+from modules.tools.tool_registry import tool_registry
+from modules.tools.tools_models import Agent_Tool
 from typing import List
 from langchain.tools import Tool
 from functools import partial
-from dependencies.container import Container
-from services.webtoken_service import WebTokenService
+from core.dependencies.container import Container
+from core.services.webtoken_service import WebTokenService
 
 class ToolsService: 
     def __init__(

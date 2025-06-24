@@ -1,7 +1,15 @@
 from langchain_core.tools import InjectedToolArg, tool
 from datetime import datetime
+from pydantic import BaseModel
 import httpx
 from typing_extensions import Annotated
+
+class AppointmentPayload(BaseModel): 
+    token: str;
+    name: str;
+    email: str;
+    phone: str;
+    start_time: datetime
 
 @tool
 async def book_appointment_with_check(

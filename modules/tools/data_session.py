@@ -1,9 +1,8 @@
 from langchain.tools import tool
 from datetime import datetime
-from models.models import AppointmentPayload
 import httpx
-from dependencies.container import Container
-from services.redis_service import RedisService
+from core.dependencies.container import Container
+from core.services.redis_service import RedisService
 
 
 @tool

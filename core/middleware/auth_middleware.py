@@ -1,6 +1,6 @@
 # middleware/auth_middleware.py
 from fastapi import Request, HTTPException
-from dependencies.container import Container
+from core.dependencies.container import Container
 from fastapi.responses import JSONResponse
 
 async def auth_middleware(request: Request, call_next):
