@@ -27,7 +27,7 @@ class AgentService:
         self.messaging_service = messaging_service
     
     
-    async def get_config(self, agent_id: str, conversation_id: str, user_id: str) -> LLMConfig:
+    async def get_config(self, agent_id: str, conversation_id: str, user_id: str, input: str) -> LLMConfig:
         agent_config = self.session.query(AgentConfig).filter_by(agent_id=agent_id).first()
         if not agent_config:
             raise ValueError(f"Agent config with  agetn ID {agent_id} not found.")
@@ -42,6 +42,9 @@ class AgentService:
 
         prompt = await self.prompt_service.build_prompt_template(
             system_prompt=agent_config.system_prompt,
+            agetn_id=agent_id,
+            user_id=user_id,
+            input=input,
             conversation_id=conversation_id,
             scratch_pad=scratch_pad_needed
         )
@@ -54,17 +57,15 @@ class AgentService:
         }
     
     async def interact(self, agent_id: str, conversation_id: str, user_id: str, input: str):
-        print(agent_id),
-        print(conversation_id)
-        print(user_id)
-        print(input)
         config = await self.get_config(
             agent_id=agent_id,
             conversation_id=conversation_id,
-            user_id=user_id
+            user_id=user_id,
+            input=input
         )
         
         prompt_template = config["prompt"]
+       
         tools = config["tools"]
         print(tools)
 

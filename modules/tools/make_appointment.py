@@ -26,7 +26,8 @@ async def book_appointment_with_check(
     This will check availability and then book the appointment if the time is available.
     If unavailable, inform the user and ask for a new appointment_datetime.
 
-    Reminder: always use `get_data` to check for existing inputs and `set_data` to store new ones.
+    Reminder: always use `get_appointment_data` to check for existing inputs and `set_appointment_data` to store new ones.
+    Reminder: only use `get_appointment_data` and `set_appointment_data` for appoinment requests do not use these tools for any other task or client request
 
     Always follow this logic:
 

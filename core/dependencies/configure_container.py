@@ -38,7 +38,7 @@ def configure_container(db_session: Session):
 
     # prompt
     prompt_service = PromptService(
-        session=db_session,
+        embedding_service=embedding_service,
         redis_service=redis_service
     )
     Container.register("prompt_service", prompt_service)

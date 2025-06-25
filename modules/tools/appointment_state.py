@@ -6,11 +6,11 @@ from core.services.redis_service import RedisService
 
 
 @tool
-async def get_data(conversation_id: str) -> dict:
+async def get_appointment_data(conversation_id: str) -> dict:
     """
     Use this tool first before making or checking any appointments.
 
-    This retrieves the current session data for the user. 
+    This retrieves the current appointment data for the user. 
     Check what has already been collected (name, email, phone, start_time)
     before asking the user for more information.
     """
@@ -20,12 +20,12 @@ async def get_data(conversation_id: str) -> dict:
 
 
 @tool
-async def set_data(conversation_id: str, key: str, value: str) -> dict:
+async def set_appointment_data(conversation_id: str, key: str, value: str) -> dict:
     """
     Use this tool every time the user provides new appointment information.
 
     This saves one piece of information (e.g., name, email, phone, or start_time)
-    in the session data. Call this tool immediately after the user responds with 
+    in the appointment data. Call this tool immediately after the user responds with 
     any missing data.
     """
     redis_service: RedisService = Container.resolve("redis_service")

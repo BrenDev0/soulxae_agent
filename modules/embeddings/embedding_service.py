@@ -13,6 +13,7 @@ import os
 from typing import Optional, List, Dict
 import uuid
 import time
+from langchain_core.documents import Document
 
 class EmbeddingService:
     def __init__(self, embedding_model=None):
@@ -144,9 +145,38 @@ class EmbeddingService:
             "document_id": str(uuid.uuid4())
         }
 
-    def scroll(self):
+    async def search_for_context(
+        self,
+        input: str,
+        agent_id: str,
+        user_id: str,
+        tok_k: int = 4
+    ) -> List[Document]:
+        collection_name = self.get_collection_name(user_id=user_id, agent_id=agent_id)
+        query_embedding = await self.embedding_model.aembed_query(input)
+
+        search_results = self.client.search(
+            collection_name=collection_name,
+            query_vector=query_embedding,
+            limit=tok_k,
+            with_payload=True
+        )
+
+        if not search_results:
+            return None
+
+        docs =  [
+            Document(
+                page_content=item.payload["text"]
+            ) for item in search_results
+        ]
+
+        return  "\n\n".join([doc.page_content for doc in docs])
+
+
+    def scroll(self, user_id: str, agent_id: str):
         results, _ = self.client.scroll(
-            collection_name="user_66cf7ffd-e94f-4f59-a76e-9d700023fba2_agent_42750558-27ab-445c-b1b1-dced31059fd9",
+            collection_name=f"user_{user_id}_agent_{agent_id}",
             limit=10,
             with_payload=True
         )

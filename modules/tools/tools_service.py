@@ -36,45 +36,20 @@ class ToolsService:
 
         webtoken_service: WebTokenService = Container.resolve("webtoken_service")
         token = webtoken_service.generate_token({"userId": user_id}, "2m")
-
+        tool_ids
         for tool_id in tool_ids:
             if tool_id not in self.tool_registry:
                 continue
                 
             tool_def = self.tool_registry[tool_id]
-            
-            if tool_def.name == "agent_handoff":
-                
-                async def handoff_wrapper(_: str = None) -> dict:
-                    return await tool_def.coroutine(
-                        conversation_id=conversation_id,
-                        token=token
-                    )
-                
-                tools.append(
-                    Tool.from_function(
-                        name=tool_def.name,
-                        description=tool_def.description,
-                        func=handoff_wrapper,  
-                        coroutine=handoff_wrapper
-                    )
-                )
-                
-            elif tool_def.name == "make_appointment":  
-                tools.append(
-                    Tool.from_function(
-                        func=partial(tool_def.coroutine, token=token),
-                        name=tool_def.name,
-                        description=tool_def.description
-                    )
-                )
-            else:
-                tools.append(
-                    Tool.from_function(
-                        func=tool_def.coroutine,
-                        name=tool_def.name,
-                        description=tool_def.description
-                    )
-                )
+
+        tools.append(
+            Tool.from_function(
+                name=tool_def.name,
+                description=tool_def.description,
+                func=tool_def.func,  
+                coroutine=tool_def.func
+            )
+        )
 
         return tools
