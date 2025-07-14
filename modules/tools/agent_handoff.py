@@ -1,16 +1,13 @@
-from langchain_core.tools import tool
 import httpx
 import os
+from modules.state.state_model import State
 
-@tool
-async def agent_handoff(conversation_id: str, token: str) -> dict:
-    """
-    Use this tool if the client expresses interest in speaking to a human representative,
-    or if a human should handle the conversation. You will let the client know you've
-    handed off the conversation and the representative will resume the conversation
-    at the earliest convenience. You will not ask for any more information or reason for the request before using this tool.
-    """
-    url = f"https://{os.getenv("APP_HOST")}/conversations/secure/{conversation_id}/agent-handoff?status=true"
+async def agent_handoff(state: State) -> State:
+    host = os.getenv("APP_HOST")
+    conversation_id = state["conversation_id"]
+    token = state["token"]
+    
+    url = f"https://{host}/conversations/secure/{conversation_id}/agent-handoff?status=true"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:

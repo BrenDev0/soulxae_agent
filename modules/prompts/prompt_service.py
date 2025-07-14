@@ -10,14 +10,13 @@ class PromptService:
         self.embedding_service = embedding_service
         self.redis_service = redis_service
 
-    async def build_prompt_template(
+    async def general_query_prompt_template(
             self, 
             system_prompt: str,
             input: str,
-            agetn_id: str,
+            agent_id: str,
             user_id: str,
-            conversation_id: str,
-            scratch_pad: bool
+            conversation_id: str
         ): 
 
         messages = [
@@ -27,7 +26,7 @@ class PromptService:
 
         context = await self.embedding_service.search_for_context(
             input=input,
-            agent_id=agetn_id,
+            agent_id=agent_id,
             user_id=user_id
         )
  
@@ -49,9 +48,6 @@ class PromptService:
                     messages.append(AIMessage(content=msg["text"]))
         
         messages.append(HumanMessagePromptTemplate.from_template('{input}'))
-        
-        if scratch_pad:
-            messages.append(AIMessagePromptTemplate.from_template('{agent_scratchpad}'))
 
         prompt = ChatPromptTemplate.from_messages(messages)
         

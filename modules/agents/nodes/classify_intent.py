@@ -1,9 +1,9 @@
 from typing import Dict
 from langchain_core.prompts import ChatPromptTemplate
-from ..state import AgentState
+from ..state import State
 from langchain_openai import ChatOpenAI
 
-async def classify_intent(llm: ChatOpenAI, state: AgentState) -> Dict:
+async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     """Classify user intent unless already in a flow."""
     if state["session_state"].get("appointment_flow"):
         return "appointment"
@@ -18,7 +18,6 @@ async def classify_intent(llm: ChatOpenAI, state: AgentState) -> Dict:
 
          if the user wants to book an appointment your answer will be appoinment
          
-
          Your response will always be either general_query, appointment, or human.
 
          do not explain your answer 
@@ -30,6 +29,6 @@ async def classify_intent(llm: ChatOpenAI, state: AgentState) -> Dict:
     chain = prompt | llm
     response = await chain.ainvoke({"input": state["input"]})
     
-    intent = response.content.lower()
-    
-    return intent
+    state["intent"] = response.content.strip().lower()
+
+    return state
