@@ -3,7 +3,6 @@ from fastapi.responses import JSONResponse
 from core.dependencies.container import Container
 from core.services.redis_service import RedisService
 from modules.agents.agents_models import InteractionRequest
-from modules.agents.agent_service import AgentService
 from  modules.agents.graph import create_graph
 from langchain_openai import ChatOpenAI
 
