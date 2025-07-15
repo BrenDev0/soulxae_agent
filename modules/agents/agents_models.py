@@ -2,13 +2,12 @@ from pydantic import BaseModel
 from typing import List, Any
 from sqlalchemy import Column, String, Text, ForeignKey, Integer, Float
 from sqlalchemy.ext.declarative import declarative_base
+from modules.agents.state import State
 
 
 
 class InteractionRequest(BaseModel):
-    agent_id: str;
-    conversation_id: str;
-    input: str
+    conversation_id: str
 
 class LLMConfig(BaseModel):
     prompt: str;

@@ -5,8 +5,9 @@ from langchain_openai import ChatOpenAI
 
 async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     """Classify user intent unless already in a flow."""
-    if state["session_state"].get("appointment_flow"):
-        return "appointment"
+    if state["appointment_flow"]:
+        state["intent"] = "appointment"
+        return state
     
     prompt = ChatPromptTemplate.from_messages([
         ("system", """
@@ -28,7 +29,12 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     
     chain = prompt | llm
     response = await chain.ainvoke({"input": state["input"]})
+
     
     state["intent"] = response.content.strip().lower()
+
+    if state["intent"] == "appointment": 
+        state["appointment_flow"] = True
+
 
     return state

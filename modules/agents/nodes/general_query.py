@@ -8,11 +8,7 @@ async def general_query(llm: ChatOpenAI, state: State) -> Dict:
     prompt_service: PromptService = Container.resolve("prompt_service")
 
     prompt =await  prompt_service.general_query_prompt_template(
-        system_prompt=state["system_message"],
-        input=state["input"],
-        agent_id=state["agent_id"],
-        user_id=state["user_id"],
-        conversation_id=state.get("conversation_id")
+        state=state
     )
 
     chain = prompt | llm

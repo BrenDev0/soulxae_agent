@@ -3,7 +3,6 @@ from typing_extensions import TypedDict
 from datetime import datetime
 
 class AppointmentState(TypedDict):
-    step: str
     name: str
     email: str
     phone: str
@@ -20,3 +19,4 @@ class State(TypedDict):
     appointments_state: AppointmentState
     response: Optional[str]
     intent: Optional[str] 
+    chat_history: list[dict]
