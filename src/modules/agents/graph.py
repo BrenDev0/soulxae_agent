@@ -9,7 +9,6 @@ from src.modules.agents.state import State
 def create_graph(llm: ChatOpenAI):
     graph = StateGraph(State)
 
-    
     async def classify_intent_node(state):
         return await classify_intent(llm, state)
 
@@ -34,7 +33,6 @@ def create_graph(llm: ChatOpenAI):
     async def ask_availability_node(state):
         return await ask_availability(llm, state)
     
-
 
     graph.add_node("classify_intent", classify_intent_node)
     graph.add_node("general_query", general_query_node) 

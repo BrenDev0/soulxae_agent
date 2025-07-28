@@ -50,21 +50,21 @@ class PromptService:
     def appointment_data_extraction_prompt(self, state: State):
         messages = [
         SystemMessage("""
-            From the chat history and latest message, extract available data for:
+                From the chat history and latest message, extract available data for:
 
-            - full_name
-            - email
-            - phone
-            - appointment_time
+                - name
+                - email
+                - phone
+                - appointment_datetime
 
-            Respond in this format:
-            {
-            "name": "...",
-            "email": "...",
-            "phone": "...",
-            "appointment_datetime": "..."
-            }
-            If anything is missing, return null for that field.
+                Respond in this format:
+                {
+                "name": "...",
+                "email": "...",
+                "phone": "...",
+                "appointment_datetime": "..."
+                }
+                If anything is missing, return null for that field.
             """)
         ]
     
