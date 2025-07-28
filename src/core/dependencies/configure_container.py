@@ -7,7 +7,7 @@ from src.core.middleware.middleware_service import MiddlewareService
 from src.modules.messaging.messaging_service import MessagingService
 from src.core.dependencies.container import Container
 
-def configure_container(db_session: Session):
+def configure_container():
     # core   
     embedding_service = EmbeddingService()
     Container.register("embedding_service", embedding_service)
