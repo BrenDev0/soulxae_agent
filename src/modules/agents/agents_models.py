@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import List, Any
 from sqlalchemy import Column, String, Text, ForeignKey, Integer, Float
 from sqlalchemy.ext.declarative import declarative_base
-from modules.agents.state import State
+from src.modules.agents.state import State
 
 
 

@@ -15,7 +15,6 @@ class State(TypedDict):
     token: str
     agent_id: str
     user_id: str
-    appointment_flow: bool
     appointments_state: AppointmentState
     response: Optional[str]
     intent: Optional[str] 

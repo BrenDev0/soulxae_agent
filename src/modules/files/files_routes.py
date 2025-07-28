@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Body, Request
 from fastapi.responses import JSONResponse
-from core.dependencies.container import Container
-from modules.embeddings.embedding_service import EmbeddingService
-from modules.files.files_models import UploadRequest
+from src.core.dependencies.container import Container
+from src.modules.embeddings.embedding_service import EmbeddingService
+from src.modules.files.files_models import UploadRequest
 
 router = APIRouter(
     prefix="/api/files",

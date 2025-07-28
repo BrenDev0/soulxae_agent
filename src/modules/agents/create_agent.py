@@ -3,7 +3,7 @@ from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from langgraph.graph import Graph
-from core.services.redis_service import RedisService
+from src.core.services.redis_service import RedisService
 from langchain_openai import ChatOpenAI
 
 class Agent:

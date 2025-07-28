@@ -1,14 +1,14 @@
 from typing import Dict
 from ..state import State
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate,  AIMessagePromptTemplate
-from langchain.schema import AIMessage, HumanMessage, SystemMessage
+from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
+from langchain.schema import SystemMessage
 import json
 from core.services.redis_service import RedisService
 from core.dependencies.container import Container
+from modules.prompts.prompt_service import PromptService
 
 async def appointment_flow(llm: ChatOpenAI, state: State) -> Dict:
-    print("appoinment flow before llm:::::::::::", state["appointments_state"])
     current_data = {
         "name": state["appointments_state"]["name"],
         "phone": state["appointments_state"]["phone"],
@@ -37,7 +37,7 @@ async def appointment_flow(llm: ChatOpenAI, state: State) -> Dict:
             "name": <string or null>,
             "email": <string or null>,
             "phone": <string or null>,
-            "response": <string>  // Ask only for what’s missing
+            "response": <string>  // Ask only for what's missing
         }}
 
         Here is what we currently know:
@@ -53,15 +53,11 @@ async def appointment_flow(llm: ChatOpenAI, state: State) -> Dict:
             SystemMessage(system_message),
         ]
 
-
-        chat_history = state["chat_history"]
+        chat_history = state.get("chat_history", [])
         
         if chat_history:
-            for msg in chat_history:
-                if msg["sender"] == "client":
-                    messages.append(HumanMessage(content=msg["text"]))
-                elif msg["sender"] == "agent":
-                    messages.append(AIMessage(content=msg["text"]))
+            prompt_service: PromptService = Container.resolve("promt_service")
+            messages = prompt_service.add_chat_history(chat_history, messages)
         
         messages.append(HumanMessagePromptTemplate.from_template('{input}'))
 
@@ -72,7 +68,7 @@ async def appointment_flow(llm: ChatOpenAI, state: State) -> Dict:
         response = await chain.ainvoke({"input": state["input"]});
         try:
             parsed = json.loads(response.content)
-            print("AGENT RESPONSE:::::::::::::", parsed)
+        
         except json.JSONDecodeError:
             raise ValueError("LLM response was not valid JSON:\n" + response.content)
 
@@ -81,12 +77,8 @@ async def appointment_flow(llm: ChatOpenAI, state: State) -> Dict:
         state["appointments_state"]["phone"] = parsed.get("phone") or current_data["phone"]
         state["response"] = parsed["response"]
 
-
-
     redis_service: RedisService = Container.resolve("redis_service")
     await redis_service.set_session(f"conversation_state:{state['conversation_id']}", state)
-    
-
     
     return state
     
