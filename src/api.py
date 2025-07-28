@@ -1,18 +1,15 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-from modules.agents import agents_routes
-from modules.files import files_routes
-from core.middleware.auth_middleware import auth_middleware
-from core.app.config import Config  
-
-config = Config
+from src.modules.agents import agents_routes
+from src.modules.files import files_routes
+from src.core.middleware.auth_middleware import auth_middleware
+from src.core.dependencies.configure_container import configure_container
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await config.on_startup()  
+    configure_container()  
     yield
-    await config.on_shutdown() 
 
 app = FastAPI(lifespan=lifespan)
 
