@@ -3,8 +3,8 @@ from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplat
 from ..state import State
 from langchain_openai import ChatOpenAI
 from langchain.schema import SystemMessage
-from modules.prompts.prompt_service import PromptService
-from core.dependencies.container import Container
+from src.modules.prompts.prompt_service import PromptService
+from src.core.dependencies.container import Container
 
 async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     system_message = """

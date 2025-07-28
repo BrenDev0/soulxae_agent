@@ -4,9 +4,9 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain.schema import SystemMessage
 import json
-from core.services.redis_service import RedisService
-from core.dependencies.container import Container
-from modules.prompts.prompt_service import PromptService
+from src.core.services.redis_service import RedisService
+from src.core.dependencies.container import Container
+from src.modules.prompts.prompt_service import PromptService
 
 async def appointment_flow(llm: ChatOpenAI, state: State) -> Dict:
     current_data = {
