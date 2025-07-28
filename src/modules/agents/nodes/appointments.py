@@ -1,10 +1,9 @@
 from typing import Dict
 from ..state import State
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from langchain.schema import SystemMessage
 import json
-from src.core.services.redis_service import RedisService
 from src.core.dependencies.container import Container
 from src.modules.prompts.prompt_service import PromptService
 
@@ -17,7 +16,6 @@ async def ask_name(llm: ChatOpenAI, state: State):
     chain = prompt | llm
     res = await chain.ainvoke({"input": state["input"]})
     state["response"] = res.content.strip()
-    state["next_node"] = "extract_and_set_data"
     return state
 
 async def ask_email(llm: ChatOpenAI, state: State):
@@ -28,7 +26,6 @@ async def ask_email(llm: ChatOpenAI, state: State):
     chain = prompt | llm
     res = await chain.ainvoke({"input": state["input"]})
     state["response"] = res.content.strip()
-    state["next_node"] = "extract_and_set_data"
     return state
 
 async def ask_phone(llm: ChatOpenAI, state: State):
@@ -39,7 +36,6 @@ async def ask_phone(llm: ChatOpenAI, state: State):
     chain = prompt | llm
     res = await chain.ainvoke({"input": state["input"]})
     state["response"] = res.content.strip()
-    state["next_node"] = "extract_and_set_data"
     return state
 
 async def ask_availability(llm: ChatOpenAI, state: State):
@@ -50,7 +46,6 @@ async def ask_availability(llm: ChatOpenAI, state: State):
     chain = prompt | llm
     res = await chain.ainvoke({"input": state["input"]})
     state["response"] = res.content.strip()
-    state["next_node"] = "extract_and_set_data"
     return state
 
 

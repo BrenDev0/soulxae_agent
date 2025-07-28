@@ -50,6 +50,10 @@ def create_graph(llm: ChatOpenAI):
     graph.add_edge("general_query", END)
     graph.add_edge("hand_off", END)
     graph.add_edge("appointment", "appointment_router")
+    graph.add_edge("ask_name", END)
+    graph.add_edge("ask_email", END)
+    graph.add_edge("ask_phone", END)
+    graph.add_edge("ask_availability", END)
 
     graph.add_conditional_edges(
         "classify_intent", 
@@ -69,11 +73,9 @@ def create_graph(llm: ChatOpenAI):
             "ask_name": "ask_name",
             "ask_email": "ask_email",
             "ask_phone": "ask_phone",
-            "ask_availablity": "ask_availability"
+            "ask_availability": "ask_availability"
         }
     )
-
-    
 
     graph.set_entry_point("classify_intent")
 
