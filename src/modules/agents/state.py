@@ -3,6 +3,7 @@ from typing_extensions import TypedDict
 from datetime import datetime
 
 class AppointmentState(TypedDict):
+    next_node: str
     name: str
     email: str
     phone: str

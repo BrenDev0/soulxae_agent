@@ -16,7 +16,7 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
         
         if the user expresses any intrest in speaking to a human represetative your answer will be human
 
-        if the user wants to book an appointment your answer will be appoinment
+        if the user wants to book an appointment your answer will be appointment
         
         Your response will always be either general_query, appointment, or human.
 
@@ -39,8 +39,13 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     
     chain = prompt | llm
     response = await chain.ainvoke({"input": state["input"]})
+    intent = response.content.strip().lower()
 
-    
-    state["intent"] = response.content.strip().lower()
+    valid_intents = {"general_query", "appointment", "human"}
+
+    if intent not in valid_intents:
+        intent = "human"  #  fall back
+
+    state["intent"] = intent
     
     return state

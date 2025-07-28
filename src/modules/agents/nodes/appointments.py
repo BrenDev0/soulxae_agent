@@ -10,43 +10,39 @@ from src.modules.prompts.prompt_service import PromptService
 
 async def appointment_flow(llm: ChatOpenAI, state: State) -> Dict:
     current_data = {
-        "name": state["appointments_state"]["name"],
-        "phone": state["appointments_state"]["phone"],
-        "email": state["appointments_state"]["email"]
+        "name": state["appointments_state"].get("name"),
+        "phone": state["appointments_state"].get("phone"),
+        "email": state["appointments_state"].get("email"),
+        "time": state["appointments_state"].get("time")
     }
 
     if not current_data["name"] or not current_data["phone"] or not current_data["email"]:
         system_message = f"""
-        You are an assistant helping to schedule an appointment. 
-
+        You are an assistant helping to schedule an appointment.
         You will receive the chat history and the user's latest message.
-
         Your job:
-        1. Identify whether the client provided any of the following: 
+        1. Identify whether the client provided any of the following:
         - Full name
         - Email
         - Phone number
-
+        - Preferred appointment time
         2. Extract those into structured JSON. If a value wasn't provided, use `null`.
-
         3. Generate a friendly response asking *only* for what is missing.
-
         ALWAYS respond in this format (as a single JSON object):
-
         {{
             "name": <string or null>,
             "email": <string or null>,
             "phone": <string or null>,
+            "time": <string or null>,
             "response": <string>  // Ask only for what's missing
         }}
-
         Here is what we currently know:
         - Name: {current_data.get("name") or "Not provided"}
         - Phone: {current_data.get("phone") or "Not provided"}
         - Email: {current_data.get("email") or "Not provided"}
-
+        - Appointment Time: {current_data.get("time") or "Not provided"}
         Ask the client *only* for the missing details in a clear and friendly way.
-        IMPORTANT! you will always respond in the language of the input
+        IMPORTANT: You will always respond in the language of the input.
         """
 
         messages = [
@@ -81,5 +77,6 @@ async def appointment_flow(llm: ChatOpenAI, state: State) -> Dict:
     await redis_service.set_session(f"conversation_state:{state['conversation_id']}", state)
     
     return state
+
     
     
