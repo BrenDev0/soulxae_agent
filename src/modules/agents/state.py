@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated, Optional, List, Dict
 from typing_extensions import TypedDict
 from datetime import datetime
 
@@ -19,4 +19,4 @@ class State(TypedDict):
     appointments_state: AppointmentState
     response: Optional[str]
     intent: Optional[str] 
-    chat_history: list[dict]
+    chat_history: List[Dict]

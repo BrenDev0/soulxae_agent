@@ -47,6 +47,36 @@ class PromptService:
         
         return prompt
     
+    def appointment_data_extraction_prompt(self, state: State):
+        messages = [
+        SystemMessage("""
+            From the chat history and latest message, extract available data for:
+
+            - full_name
+            - email
+            - phone
+            - appointment_time
+
+            Respond in this format:
+            {
+            "name": "...",
+            "email": "...",
+            "phone": "...",
+            "appointment_datetime": "..."
+            }
+            If anything is missing, return null for that field.
+            """)
+        ]
+    
+        messages = self.add_chat_history(state["chat_history"], messages)
+
+    
+        messages.append(HumanMessagePromptTemplate.from_template('{input}'))
+
+        prompt = ChatPromptTemplate.from_messages(messages)
+        
+        return prompt
+    
     def add_chat_history(chat_history: List[Dict], messages: List[Any]) -> List[Any]:
         for msg in chat_history:
             if msg["sender"] == "client":

@@ -8,75 +8,84 @@ from src.core.services.redis_service import RedisService
 from src.core.dependencies.container import Container
 from src.modules.prompts.prompt_service import PromptService
 
-async def appointment_flow(llm: ChatOpenAI, state: State) -> Dict:
-    current_data = {
-        "name": state["appointments_state"].get("name"),
-        "phone": state["appointments_state"].get("phone"),
-        "email": state["appointments_state"].get("email"),
-        "time": state["appointments_state"].get("time")
-    }
 
-    if not current_data["name"] or not current_data["phone"] or not current_data["email"]:
-        system_message = f"""
-        You are an assistant helping to schedule an appointment.
-        You will receive the chat history and the user's latest message.
-        Your job:
-        1. Identify whether the client provided any of the following:
-        - Full name
-        - Email
-        - Phone number
-        - Preferred appointment time
-        2. Extract those into structured JSON. If a value wasn't provided, use `null`.
-        3. Generate a friendly response asking *only* for what is missing.
-        ALWAYS respond in this format (as a single JSON object):
-        {{
-            "name": <string or null>,
-            "email": <string or null>,
-            "phone": <string or null>,
-            "time": <string or null>,
-            "response": <string>  // Ask only for what's missing
-        }}
-        Here is what we currently know:
-        - Name: {current_data.get("name") or "Not provided"}
-        - Phone: {current_data.get("phone") or "Not provided"}
-        - Email: {current_data.get("email") or "Not provided"}
-        - Appointment Time: {current_data.get("time") or "Not provided"}
-        Ask the client *only* for the missing details in a clear and friendly way.
-        IMPORTANT: You will always respond in the language of the input.
-        """
-
-        messages = [
-            SystemMessage(system_message),
-        ]
-
-        chat_history = state.get("chat_history", [])
-        
-        if chat_history:
-            prompt_service: PromptService = Container.resolve("promt_service")
-            messages = prompt_service.add_chat_history(chat_history, messages)
-        
-        messages.append(HumanMessagePromptTemplate.from_template('{input}'))
-
-        prompt = ChatPromptTemplate.from_messages(messages)
-
-        chain = prompt | llm
-        
-        response = await chain.ainvoke({"input": state["input"]});
-        try:
-            parsed = json.loads(response.content)
-        
-        except json.JSONDecodeError:
-            raise ValueError("LLM response was not valid JSON:\n" + response.content)
-
-        state["appointments_state"]["name"] = parsed.get("name") or current_data["name"]
-        state["appointments_state"]["email"] = parsed.get("email") or current_data["email"]
-        state["appointments_state"]["phone"] = parsed.get("phone") or current_data["phone"]
-        state["response"] = parsed["response"]
-
-    redis_service: RedisService = Container.resolve("redis_service")
-    await redis_service.set_session(f"conversation_state:{state['conversation_id']}", state)
-    
+async def ask_name(llm: ChatOpenAI, state: State):
+    prompt = ChatPromptTemplate.from_messages([
+        SystemMessage("Ask the user their full name in a friendly and natural tone. Match their language."),
+        ("human", "{input}")
+    ])
+    chain = prompt | llm
+    res = await chain.ainvoke({"input": state["input"]})
+    state["response"] = res.content.strip()
+    state["next_node"] = "extract_and_set_data"
     return state
 
+async def ask_email(llm: ChatOpenAI, state: State):
+    prompt = ChatPromptTemplate.from_messages([
+        SystemMessage("Ask the user their email in a friendly and natural tone. Match their language."),
+        ("human", "{input}")
+    ])
+    chain = prompt | llm
+    res = await chain.ainvoke({"input": state["input"]})
+    state["response"] = res.content.strip()
+    state["next_node"] = "extract_and_set_data"
+    return state
+
+async def ask_phone(llm: ChatOpenAI, state: State):
+    prompt = ChatPromptTemplate.from_messages([
+        SystemMessage("Ask the user their phone in a friendly and natural tone. Match their language."),
+        ("human", "{input}")
+    ])
+    chain = prompt | llm
+    res = await chain.ainvoke({"input": state["input"]})
+    state["response"] = res.content.strip()
+    state["next_node"] = "extract_and_set_data"
+    return state
+
+async def ask_availability(llm: ChatOpenAI, state: State):
+    prompt = ChatPromptTemplate.from_messages([
+        SystemMessage("Ask the user their prefered appiontment date and time in a friendly and natural tone. Match their language."),
+        ("human", "{input}")
+    ])
+    chain = prompt | llm
+    res = await chain.ainvoke({"input": state["input"]})
+    state["response"] = res.content.strip()
+    state["next_node"] = "extract_and_set_data"
+    return state
+
+
+
+async def extract_and_set_data(llm: ChatOpenAI, state: State):
+    prompt_service: PromptService = Container.resolve("prompt_service")
+    prompt = prompt_service.appointment_data_extraction_prompt(state=state)
+    chain = prompt | llm
+    res = await chain.ainvoke({"input": state["input"]})
+    parsed = json.loads(res.content)
+
+    # Update state
+    appointment = state["appointments_state"]
+    for key in ["name", "email", "phone", "time"]:
+        if parsed.get(key):
+            appointment[key] = parsed[key]
+
+    state["next_node"] = "appointment_router"
+    return state
+
+
+async def check_avialablitly(state: State):
+    pass
+
     
-    
+async def appointment_router(state: State):
+    appt = state["appointments_state"]
+    if not appt.get("name"):
+        state["next_node"] = "ask_name"
+    elif not appt.get("email"):
+        state["next_node"] = "ask_email"
+    elif not appt.get("phone"):
+        state["next_node"] = "ask_phone"
+    elif not appt.get("appointment_datetime"):
+        state["next_node"] = "ask_time"
+    else:
+        state["next_node"] = "check_availability"
+    return state
