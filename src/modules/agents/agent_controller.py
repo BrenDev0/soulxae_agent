@@ -5,6 +5,7 @@ from src.core.dependencies.container import Container
 from src.modules.agents.agents_models import InteractionRequest
 
 class AgentController:
+    @staticmethod
     async def interact(
         data: InteractionRequest,
         graph
