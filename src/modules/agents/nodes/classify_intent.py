@@ -1,8 +1,6 @@
 from typing import Dict
-from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 from ..state import State
 from langchain_openai import ChatOpenAI
-from langchain.schema import SystemMessage
 from src.modules.prompts.prompt_service import PromptService
 from src.core.dependencies.container import Container
 import json
@@ -15,8 +13,6 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     chain = prompt | llm
     response = await chain.ainvoke({"input": state["input"]})
     data = json.loads(response.content)
-
-    print("DATA:::::::::", data)
 
     langauge = data.get("language", None)
     
