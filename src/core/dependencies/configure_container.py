@@ -6,6 +6,7 @@ from src.core.services.webtoken_service import WebTokenService
 from src.core.middleware.middleware_service import MiddlewareService
 from src.modules.messaging.messaging_service import MessagingService
 from src.core.dependencies.container import Container
+from src.modules.agents.agent_controller import AgentController
 
 def configure_container():
     # core   
@@ -33,6 +34,10 @@ def configure_container():
     )
     Container.register("prompt_service", prompt_service)
 
+    # modules 
+
+    agents_controller = AgentController()
+    Container.register("agents_controller", agents_controller)
 
 
 
