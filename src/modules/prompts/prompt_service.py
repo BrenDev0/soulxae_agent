@@ -11,6 +11,41 @@ class PromptService:
         self.embedding_service = embedding_service
         self.redis_service = redis_service
 
+    async def classify_intent_prompt_template(
+        self, 
+        state: State
+    ):
+        system_message = """
+            Classify the user's intent. Options: general_query, appointment, human.
+
+            use the context of the conversation to guide your desicion,
+
+            general_query is for all questions and information,
+            
+            if the user expresses any intrest in speaking to a human represetative your answer will be human
+
+            if the user wants to book an appointment your answer will be appointment
+            
+            Your response will always be either general_query, appointment, or human.
+
+            do not explain your answer 
+        
+        """
+
+        messages = [
+            SystemMessage(content=system_message),
+        ]
+
+        chat_history = state.get("chat_history", [])
+        if chat_history:
+            messages = self.add_chat_history(chat_history, messages)
+        
+        messages.append(HumanMessagePromptTemplate.from_template('{input}'))
+
+        prompt = ChatPromptTemplate.from_messages(messages)
+        
+        return prompt
+
     async def general_query_prompt_template(
             self, 
             state: State

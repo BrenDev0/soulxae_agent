@@ -7,7 +7,7 @@ from src.modules.prompts.prompt_service import PromptService
 async def general_query(llm: ChatOpenAI, state: State) -> Dict:
     prompt_service: PromptService = Container.resolve("prompt_service")
 
-    prompt =await  prompt_service.general_query_prompt_template(
+    prompt = await  prompt_service.general_query_prompt_template(
         state=state
     )
 
