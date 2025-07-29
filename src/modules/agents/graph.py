@@ -38,7 +38,7 @@ def create_graph(llm: ChatOpenAI):
     graph.add_node("general_query", general_query_node) 
     graph.add_node("hand_off", agent_handoff)
     graph.add_node("appointment", extract_appointment_data_node)
-    graph.add_node("apointment_router", appointments_router_node)
+    graph.add_node("appointment_router", appointments_router_node)
     graph.add_node("ask_name", ask_name_node)
     graph.add_node("ask_email", ask_email_node)
     graph.add_node("ask_phone", ask_phone_node)
