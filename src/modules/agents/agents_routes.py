@@ -34,7 +34,7 @@ async def interact(
     # print(data)
 
     # backgroundTasks.add_task(agent_service.interact, data.agent_id, data.conversation_id, user_id, data.input,)
-    return controller.interact(
+    return await controller.interact(
         data=data,
         graph=graph
     )
