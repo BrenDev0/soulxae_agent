@@ -15,6 +15,6 @@ async def general_query(llm: ChatOpenAI, state: State) -> Dict:
 
     response = await chain.ainvoke({"input": state["input"]})
 
-    state["response"] = response.content.strip().lower()
+    state["response"] = response.content.strip()
 
     return state
