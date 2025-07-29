@@ -23,7 +23,7 @@ def get_controller():
     controller = Container.resolve("agents_controller")
     return controller
 
-@router.post("/interact", response_class=JSONResponse)
+@router.post("/interact", status_code=200)
 async def interact(
     data: InteractionRequest = Body(...),
     graph = Depends(get_graph),
