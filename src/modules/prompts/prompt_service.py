@@ -68,7 +68,10 @@ class PromptService:
             """)
         ]
     
-        messages = self.add_chat_history(state["chat_history"], messages)
+        chat_history = state.get("chat_history", [])
+        
+        if chat_history:
+            messages = self.add_chat_history(chat_history, messages)
 
     
         messages.append(HumanMessagePromptTemplate.from_template('{input}'))
