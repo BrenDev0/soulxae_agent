@@ -113,7 +113,7 @@ class PromptService:
         prompt = ChatPromptTemplate.from_messages(messages)
         
         return prompt
-    
+
     @staticmethod
     def add_chat_history(chat_history: List[Dict], messages: List[Any]) -> List[Any]:
         for msg in chat_history:

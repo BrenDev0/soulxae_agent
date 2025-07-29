@@ -11,6 +11,9 @@ def create_graph(llm: ChatOpenAI):
 
     async def classify_intent_node(state):
         return await classify_intent(llm, state)
+    
+    async def agent_handoff_node(state):
+        return await agent_handoff(llm, state)
 
     async def general_query_node(state):
         return await general_query(llm, state)
@@ -36,7 +39,7 @@ def create_graph(llm: ChatOpenAI):
 
     graph.add_node("classify_intent", classify_intent_node)
     graph.add_node("general_query", general_query_node) 
-    graph.add_node("hand_off", agent_handoff)
+    graph.add_node("hand_off", agent_handoff_node)
     graph.add_node("appointment", extract_appointment_data_node)
     graph.add_node("appointment_router", appointments_router_node)
     graph.add_node("ask_name", ask_name_node)
