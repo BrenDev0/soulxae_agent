@@ -25,8 +25,6 @@ def get_controller():
 
 @router.post("/interact", response_class=JSONResponse)
 async def interact(
-    request: Request,
-    backgroundTasks: BackgroundTasks,
     data: InteractionRequest = Body(...),
     graph = Depends(get_graph),
     controller: AgentController = Depends(get_controller)
@@ -37,7 +35,6 @@ async def interact(
 
     # backgroundTasks.add_task(agent_service.interact, data.agent_id, data.conversation_id, user_id, data.input,)
     return controller.interact(
-        request=request,
         data=data,
         graph=graph
     )

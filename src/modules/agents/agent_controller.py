@@ -6,7 +6,6 @@ from src.modules.agents.agents_models import InteractionRequest
 
 class AgentController:
     async def interact(
-        request: Request,
         data: InteractionRequest,
         graph
     ):
