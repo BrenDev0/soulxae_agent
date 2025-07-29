@@ -11,25 +11,23 @@ class PromptService:
         self.embedding_service = embedding_service
         self.redis_service = redis_service
 
-    async def classify_intent_prompt_template(
+    def classify_intent_prompt_template(
         self, 
         state: State
     ):
         system_message = """
-            Classify the user's intent. Options: general_query, appointment, human.
+            Classify the user's intent and determine their language. Intent options: "general_query", "appointment", "human".
+            Use the context of the conversation to guide your decision:
+            - "general_query" is for all types of questions and information.
+            - If the user expresses any interest in speaking to a human representative, the intent will be "human".
+            - If the user wants to book an appointment, the intent will be "appointment".
+            Your response should always be like the example below:
+            {
+                "language": "spanish",
+                "intent": "human"
+            }
+            Do not explain your answer.
 
-            use the context of the conversation to guide your desicion,
-
-            general_query is for all questions and information,
-            
-            if the user expresses any intrest in speaking to a human represetative your answer will be human
-
-            if the user wants to book an appointment your answer will be appointment
-            
-            Your response will always be either general_query, appointment, or human.
-
-            do not explain your answer 
-        
         """
 
         messages = [
@@ -92,7 +90,8 @@ class PromptService:
                 - phone
                 - appointment_datetime
 
-                Respond in this format:
+                Do not ask for any information.
+                Respond only in this format:
                 {
                 "name": "...",
                 "email": "...",
@@ -115,6 +114,7 @@ class PromptService:
         
         return prompt
     
+    @staticmethod
     def add_chat_history(chat_history: List[Dict], messages: List[Any]) -> List[Any]:
         for msg in chat_history:
             if msg["sender"] == "client":

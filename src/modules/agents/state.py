@@ -19,4 +19,5 @@ class State(TypedDict):
     appointments_state: AppointmentState
     response: Optional[str]
     intent: Optional[str] 
+    chat_language: str
     chat_history: List[Dict]

@@ -12,7 +12,6 @@ class AgentController:
     ):
         redis_service: RedisService = Container.resolve("redis_service")
         state = await redis_service.get_session(f"conversation_state:{data.conversation_id}")
-
         
         final_state: State = await graph.ainvoke(state)
 

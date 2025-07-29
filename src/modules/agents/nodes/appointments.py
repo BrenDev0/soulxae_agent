@@ -10,7 +10,7 @@ from src.modules.prompts.prompt_service import PromptService
 
 async def ask_name(llm: ChatOpenAI, state: State):
     prompt = ChatPromptTemplate.from_messages([
-        SystemMessage("Ask the user their full name in a friendly and natural tone. Match their language."),
+        SystemMessage(f"Ask the user their full name in a friendly and natural tone. Always respond in {state['chat_language']}."),
         ("human", "{input}")
     ])
     chain = prompt | llm
@@ -20,7 +20,7 @@ async def ask_name(llm: ChatOpenAI, state: State):
 
 async def ask_email(llm: ChatOpenAI, state: State):
     prompt = ChatPromptTemplate.from_messages([
-        SystemMessage("Ask the user their email in a friendly and natural tone. Match their language."),
+        SystemMessage(f"Ask the user their email in a friendly and natural tone. Always respond in {state['chat_language']}."),
         ("human", "{input}")
     ])
     chain = prompt | llm
@@ -30,7 +30,7 @@ async def ask_email(llm: ChatOpenAI, state: State):
 
 async def ask_phone(llm: ChatOpenAI, state: State):
     prompt = ChatPromptTemplate.from_messages([
-        SystemMessage("Ask the user their phone in a friendly and natural tone. Match their language."),
+        SystemMessage(f"Ask the user their phone in a friendly and natural tone. Always respond in {state['chat_language']}."),
         ("human", "{input}")
     ])
     chain = prompt | llm
@@ -40,7 +40,7 @@ async def ask_phone(llm: ChatOpenAI, state: State):
 
 async def ask_availability(llm: ChatOpenAI, state: State):
     prompt = ChatPromptTemplate.from_messages([
-        SystemMessage("Ask the user their prefered appiontment date and time in a friendly and natural tone. Match their language."),
+        SystemMessage(f"Ask the user their prefered appiontment date and time in a friendly and natural tone. Always respond in {state['chat_language']}."),
         ("human", "{input}")
     ])
     chain = prompt | llm
@@ -53,8 +53,10 @@ async def ask_availability(llm: ChatOpenAI, state: State):
 async def extract_and_set_data(llm: ChatOpenAI, state: State):
     prompt_service: PromptService = Container.resolve("prompt_service")
     prompt = prompt_service.appointment_data_extraction_prompt(state=state)
+    
     chain = prompt | llm
     res = await chain.ainvoke({"input": state["input"]})
+  
     parsed = json.loads(res.content)
 
     # Update state
