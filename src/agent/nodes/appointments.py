@@ -71,7 +71,9 @@ async def extract_and_set_data(llm: ChatOpenAI, state: State):
 
 
 async def check_avialablitly(state: State):
-    pass
+    state["response"] = "your date hase been confirmed"
+
+    return state
 
     
 async def appointment_router(state: State):

@@ -6,7 +6,6 @@ from src.dependencies.container import Container
 import json
 
 async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
-    
     prompt_service: PromptService = Container.resolve("prompt_service")
     prompt = prompt_service.classify_intent_prompt_template(state=state)
     
