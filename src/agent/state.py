@@ -1,4 +1,4 @@
-from typing import Annotated, Optional, List, Dict
+from typing import Optional, List, Dict
 from typing_extensions import TypedDict
 from datetime import datetime
 

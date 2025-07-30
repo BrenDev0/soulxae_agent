@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
-from src.modules.embeddings.embedding_service import EmbeddingService
-from src.core.services.redis_service import RedisService
-from src.modules.prompts.prompt_service import PromptService
-from src.core.services.webtoken_service import WebTokenService
-from src.core.middleware.middleware_service import MiddlewareService
-from src.modules.messaging.messaging_service import MessagingService
-from src.core.dependencies.container import Container
-from src.modules.agents.agent_controller import AgentController
+from src.agent.services.embedding_service import EmbeddingService
+from src.api.core.services.redis_service import RedisService
+from src.agent.services.prompt_service import PromptService
+from src.api.core.services.webtoken_service import WebTokenService
+from src.api.core.middleware.middleware_service import MiddlewareService
+from src.api.modules.messaging.messaging_service import MessagingService
+from src.dependencies.container import Container
+from src.api.modules.agents.agent_controller import AgentController
 
 def configure_container():
     # core   

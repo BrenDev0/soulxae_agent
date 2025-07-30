@@ -1,8 +1,8 @@
 from fastapi import Request
-from src.modules.agents.state import State
-from src.core.services.redis_service import RedisService
-from src.core.dependencies.container import Container
-from src.modules.agents.agents_models import InteractionRequest
+from src.agent.state import State
+from src.api.core.services.redis_service import RedisService
+from src.dependencies.container import Container
+from src.api.modules.agents.agents_models import InteractionRequest
 
 class AgentController:
     @staticmethod

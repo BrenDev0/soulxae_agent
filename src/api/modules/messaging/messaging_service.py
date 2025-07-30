@@ -1,6 +1,6 @@
 import httpx
-from src.core.dependencies.container import Container
-from src.core.services.webtoken_service import WebTokenService
+from src.dependencies.container import Container
+from src.api.core.services.webtoken_service import WebTokenService
 
 
 class MessagingService:

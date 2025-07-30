@@ -4,8 +4,8 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.schema import SystemMessage
 import json
-from src.core.dependencies.container import Container
-from src.modules.prompts.prompt_service import PromptService
+from src.dependencies.container import Container
+from src.agent.services.prompt_service import PromptService
 
 
 async def ask_name(llm: ChatOpenAI, state: State):
@@ -57,11 +57,12 @@ async def extract_and_set_data(llm: ChatOpenAI, state: State):
     chain = prompt | llm
     res = await chain.ainvoke({"input": state["input"]})
   
+    print("EXTRACT DATA:::::", res.content)
     parsed = json.loads(res.content)
 
     # Update state
     appointment = state["appointments_state"]
-    for key in ["name", "email", "phone", "time"]:
+    for key in ["name", "email", "phone", "appointment_datetime"]:
         if parsed.get(key):
             appointment[key] = parsed[key]
 
@@ -82,7 +83,7 @@ async def appointment_router(state: State):
     elif not appt.get("phone"):
         state["next_node"] = "ask_phone"
     elif not appt.get("appointment_datetime"):
-        state["next_node"] = "ask_time"
+        state["next_node"] = "ask_availability"
     else:
         state["next_node"] = "check_availability"
     return state

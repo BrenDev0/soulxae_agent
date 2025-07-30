@@ -1,11 +1,10 @@
-from sqlalchemy.orm import Session
-from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate,  AIMessagePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from typing import List, Dict, Any
-from src.core.services.redis_service import RedisService
-from src.modules.embeddings.embedding_service import EmbeddingService
-from src.modules.agents.state import State
-
+from src.api.core.services.redis_service import RedisService
+from src.agent.services.embedding_service import EmbeddingService
+from src.agent.state import State
+from  datetime import datetime
 class PromptService:
     def __init__(self, embedding_service: EmbeddingService, redis_service: RedisService):
         self.embedding_service = embedding_service
@@ -81,8 +80,9 @@ class PromptService:
         return prompt
     
     def appointment_data_extraction_prompt(self, state: State):
+        current_datetime = datetime.now().isoformat()
         messages = [
-        SystemMessage("""
+        SystemMessage(f"""
                 From the chat history and latest message, extract available data for:
 
                 - name
@@ -92,13 +92,15 @@ class PromptService:
 
                 Do not ask for any information.
                 Respond only in this format:
-                {
+                {{
                 "name": "...",
                 "email": "...",
                 "phone": "...",
                 "appointment_datetime": "..."
-                }
+                }}
                 If anything is missing, return null for that field.
+                any datetimes given should be converted to an ISO string
+                the current date is {current_datetime}
             """)
         ]
     

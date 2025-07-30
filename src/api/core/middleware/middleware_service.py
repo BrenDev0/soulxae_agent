@@ -1,7 +1,7 @@
 import os
 import jwt
 from fastapi import Request, HTTPException
-from src.core.services.webtoken_service import WebTokenService
+from src.api.core.services.webtoken_service import WebTokenService
 
 
 class MiddlewareService:

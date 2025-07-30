@@ -1,8 +1,8 @@
 from typing import Dict
 from ..state import State
 from langchain_openai import ChatOpenAI
-from src.modules.prompts.prompt_service import PromptService
-from src.core.dependencies.container import Container
+from src.agent.services.prompt_service import PromptService
+from src.dependencies.container import Container
 import json
 
 async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:

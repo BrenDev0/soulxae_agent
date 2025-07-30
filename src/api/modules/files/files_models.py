@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import List, Any
 
 class UploadRequest(BaseModel):
     agent_id: str;
