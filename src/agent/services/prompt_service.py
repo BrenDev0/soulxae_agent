@@ -99,8 +99,8 @@ class PromptService:
                 "appointment_datetime": "..."
                 }}
                 If anything is missing, return null for that field.
-                any datetimes given should be converted to an ISO string
-                the current date is {current_datetime}
+                Any datetimes given should be converted to an ISO string
+                the current date is {current_datetime}.
             """)
         ]
     
