@@ -1,5 +1,5 @@
 from langchain_openai import ChatOpenAI
-from langgraph.graph import StateGraph, END
+from langgraph.graph import StateGraph, END, START
 from src.agent.nodes.classify_intent import classify_intent
 from src.agent.nodes.general_query import general_query
 from src.agent.nodes.appointments import ask_availability, ask_email, ask_name, ask_phone, extract_and_set_data, appointment_router, check_avialablitly
@@ -52,6 +52,7 @@ def create_graph(llm: ChatOpenAI):
     graph.add_node("check_availability", check_availability_node)
     
 
+    graph.add_edge(START, "classify_intent")
     graph.add_edge("general_query", END)
     graph.add_edge("hand_off", END)
     graph.add_edge("appointment", "appointment_router")
@@ -83,7 +84,5 @@ def create_graph(llm: ChatOpenAI):
             "check_availability": "check_availability"
         }
     )
-
-    graph.set_entry_point("classify_intent")
 
     return graph.compile()
