@@ -57,7 +57,6 @@ async def extract_and_set_data(llm: ChatOpenAI, state: State):
     chain = prompt | llm
     res = await chain.ainvoke({"input": state["input"]})
   
-    print("EXTRACT DATA:::::", res.content)
     parsed = json.loads(res.content)
 
     # Update state
