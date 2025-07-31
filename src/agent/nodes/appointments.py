@@ -30,7 +30,7 @@ async def ask_email(llm: ChatOpenAI, state: State):
 
 async def ask_phone(llm: ChatOpenAI, state: State):
     prompt = ChatPromptTemplate.from_messages([
-        SystemMessage(f"Ask the user their phone in a friendly and natural tone. Always respond in {state['chat_language']}."),
+        SystemMessage(f"Ask the user their phone in a friendly tone. Always respond in {state['chat_language']}."),
         ("human", "{input}")
     ])
     chain = prompt | llm
@@ -40,7 +40,7 @@ async def ask_phone(llm: ChatOpenAI, state: State):
 
 async def ask_availability(llm: ChatOpenAI, state: State):
     prompt = ChatPromptTemplate.from_messages([
-        SystemMessage(f"Ask the user their prefered appiontment date and time in a friendly and natural tone. Always respond in {state['chat_language']}."),
+        SystemMessage(f"Ask the user their prefered appiontment date and time in a natural tone. Always respond in {state['chat_language']}."),
         ("human", "{input}")
     ])
     chain = prompt | llm
