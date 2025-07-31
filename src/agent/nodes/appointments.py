@@ -71,9 +71,10 @@ async def extract_and_set_data(llm: ChatOpenAI, state: State):
 
 
 async def check_avialablitly(state: State):
-    state["response"] = "your date hase been confirmed"
-
-    return state
+    # check date from the other server 
+    # if  availbale tell the llm to let th client know the date has been reserved
+    # if unavailable tell the llm to ask the client for another date
+    pass
 
     
 async def appointment_router(state: State):
