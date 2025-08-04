@@ -89,15 +89,17 @@ class PromptService:
                 - email
                 - phone
                 - appointment_datetime
-
+               
                 Do not ask for any information.
                 Respond only in this format:
+                
                 {{
                 "name": "...",
                 "email": "...",
                 "phone": "...",
                 "appointment_datetime": "..."
                 }}
+                
                 If anything is missing, return null for that field.
                 Any datetimes given should be converted to an ISO string
                 the current date is {current_datetime}.

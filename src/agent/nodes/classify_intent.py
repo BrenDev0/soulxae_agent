@@ -11,6 +11,7 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     
     chain = prompt | llm
     response = await chain.ainvoke({"input": state["input"]})
+    print(response.content)
     data = json.loads(response.content)
 
     langauge = data.get("language", None)

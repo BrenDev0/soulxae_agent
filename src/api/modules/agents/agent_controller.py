@@ -15,4 +15,6 @@ class AgentController:
         
         final_state: State = await graph.ainvoke(state)
 
+        await redis_service.set_session(f"conversation_state:{data.conversation_id}", final_state)
+
         return { "data": final_state["response"]}

@@ -5,6 +5,10 @@ from src.agent.nodes.general_query import general_query
 from src.agent.nodes.appointments import ask_availability, ask_email, ask_name, ask_phone, extract_and_set_data, appointment_router, check_avialablitly
 from src.agent.nodes.agent_handoff import agent_handoff
 from src.agent.state import State
+from langgraph.prebuilt import create_react_agent
+from langgraph_supervisor import create_supervisor
+from  datetime import datetime
+
 
 def create_graph(llm: ChatOpenAI):
     graph = StateGraph(State)
@@ -37,7 +41,7 @@ def create_graph(llm: ChatOpenAI):
         return await ask_availability(llm, state)
     
     async def check_availability_node(state):
-        return await check_avialablitly(state)
+        return await check_avialablitly(llm, state)
     
 
     graph.add_node("classify_intent", classify_intent_node)
