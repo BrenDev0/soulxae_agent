@@ -83,7 +83,7 @@ async def check_availability_tool(state: State) -> State:
             response.raise_for_status()
             return response.json()["is_available"]
     except httpx.HTTPStatusError as exc:
-        print(f"Agent handoff failed: {exc.response.status_code} - {exc.response.text}")
+        print(f"Availability equest failed: {exc.response.status_code} - {exc.response.text}")
         return {"error": exc.response.text, "status_code": exc.response.status_code}
     
 
@@ -99,9 +99,28 @@ async def create_appoinment_tool(state: State) -> State:
             response = await client.post(url, headers=headers)
             response.raise_for_status()
             return response.json()
+        
     except httpx.HTTPStatusError as exc:
-        print(f"Agent handoff failed: {exc.response.status_code} - {exc.response.text}")
+        print(f"Unable to create appointment: {exc.response.status_code} - {exc.response.text}")
         return {"error": exc.response.text, "status_code": exc.response.status_code}
+
+
+async def get_available_slots(state):
+    host = os.getenv("APP_HOST")
+    token = state["token"]
+    
+    url = f"https://{host}/calendars/secure/event"
+    headers = {"Authorization": f"Bearer {token}"}
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=headers)
+            response.raise_for_status()
+            return response.json()["data"]
+        
+    except httpx.HTTPStatusError as exc:
+        print(f"Request failed: {exc.response.status_code} - {exc.response.text}")
+        return []
 
 
 async def check_avialablitly(llm: ChatOpenAI, state: State):
@@ -113,10 +132,26 @@ async def check_avialablitly(llm: ChatOpenAI, state: State):
         Only respond in {state['chat_language']}
         """
     else:
-        prompt = f"""
-        Let the client know that the date requested has is not available and ask them for another date and time.
-        Only respond in {state['chat_language']}
-        """
+        state["appointments_state"]["appointment_datetime"] = None
+
+        available_slots = await get_available_slots(state)
+        if available_slots:
+            slots_text = "\n".join([f"• {slot}" for slot in available_slots[:3]])
+
+            prompt = f"""
+            The user's requested time ({state['appointments_state']['appointment_datetime']}) is not available.
+            Show them these alternative options i a ocnversation format:
+            {slots_text}
+            
+            Ask them to choose one of these times or suggest a different time.
+            Be helpful and friendly.Only respond in {state['chat_language']}
+            """
+        else: 
+            prompt = f"""
+             The user's requested time ({state['appointments_state']['appointment_datetime']}) is not available.
+             Ask them  to provide an alternative date and time for thier appointment.
+             Be helpful and friendly.Only respond in {state['chat_language']}
+            """
     
     response = await llm.ainvoke(prompt)
     
