@@ -60,9 +60,7 @@ async def extract_and_set_data(llm: ChatOpenAI, state: State):
     res = await chain.ainvoke({"input": state["input"]})
   
     parsed = json.loads(res.content)
-    print(parsed, "APP STATE::::::::")
-
-
+  
     # Update state
     appointment = state["appointments_state"]
     for key in ["name", "email", "phone", "appointment_datetime"]:
