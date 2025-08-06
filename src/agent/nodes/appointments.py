@@ -8,6 +8,7 @@ from src.dependencies.container import Container
 from src.agent.services.prompt_service import PromptService
 import os
 import httpx
+from datetime import datetime, timedelta
 
 
 async def ask_name(llm: ChatOpenAI, state: State):
@@ -74,7 +75,7 @@ async def check_availability_tool(state: State) -> State:
     host = os.getenv("APP_HOST")
     token = state["token"]
     
-    url = f"https://{host}/google/calendars/secure/availability"
+    url = f"https://{host}/google/calendars/secure/availability/{state['calendar_id']}"
     headers = {"Authorization": f"Bearer {token}"}
     req_body = {
         "slot": state["appointments_state"]["appointment_datetime"],
@@ -94,13 +95,27 @@ async def check_availability_tool(state: State) -> State:
 async def create_appoinment_tool(state: State) -> State:
     host = os.getenv("APP_HOST")
     token = state["token"]
+
+    start_time_str = state["appointments_state"]["appointment_datetime"]
+    start_time = datetime.fromisoformat(start_time_str.replace("Z", "+00:00"))
+    end_time = start_time + timedelta(minutes=30)
     
-    url = f"https://{host}/calendars/secure/event"
+    url = f"https://{host}/google/calendars/secure/events/{state['calendar_id']}"
     headers = {"Authorization": f"Bearer {token}"}
+    
+    req_body = {
+        "startTime": state["appointments_state"]["appointment_datetime"],
+        "endTime": end_time.isoformat(),
+        "summary": f"{state['appointments_state']['name']}",
+        "description": f"Phone: {state['appointments_state']['phone']}",
+        "attendees": [{
+            "email": state["appointments_state"]["email"]
+        }]
+    }
 
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(url, headers=headers)
+            response = await client.post(url, headers=headers, json=req_body)
             response.raise_for_status()
             return response.json()
         
@@ -132,7 +147,7 @@ async def check_avialablitly(llm: ChatOpenAI, state: State):
 
     if is_available:
         await create_appoinment_tool(state)
-        prompt = f"""Let the client know youve booked their appointment and thank them for thier time. 
+        prompt = f"""Let the user know youve booked their appointment and thank them for thier time. 
         Only respond in {state['chat_language']}
         """
     else:
@@ -140,11 +155,11 @@ async def check_avialablitly(llm: ChatOpenAI, state: State):
 
         available_slots = await get_available_slots(state)
         if available_slots:
-            slots_text = "\n".join([f"• {slot}" for slot in available_slots[:3]])
+            slots_text = "\n".join([f"{slot}" for slot in available_slots[:3]])
 
             prompt = f"""
             The user's requested time ({state['appointments_state']['appointment_datetime']}) is not available.
-            Show them these alternative options i a ocnversation format:
+            Show them these alternative options in a conversational format:
             {slots_text}
             
             Ask them to choose one of these times or suggest a different time.
@@ -154,7 +169,7 @@ async def check_avialablitly(llm: ChatOpenAI, state: State):
             prompt = f"""
              The user's requested time ({state['appointments_state']['appointment_datetime']}) is not available.
              Ask them  to provide an alternative date and time for thier appointment.
-             Be helpful and friendly.Only respond in {state['chat_language']}
+             Be helpful and friendly. Only respond in {state['chat_language']}
             """
     
     response = await llm.ainvoke(prompt)
