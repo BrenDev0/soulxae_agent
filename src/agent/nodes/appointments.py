@@ -1,5 +1,5 @@
 from typing import Dict
-from ..state import State
+from src.agent.state import State
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.schema import SystemMessage
@@ -21,6 +21,7 @@ async def ask_name(llm: ChatOpenAI, state: State):
     state["response"] = res.content.strip()
     return state
 
+
 async def ask_email(llm: ChatOpenAI, state: State):
     prompt = ChatPromptTemplate.from_messages([
         SystemMessage(f"Ask the user their email in a natural tone. Always respond in {state['chat_language']}."),
@@ -30,6 +31,7 @@ async def ask_email(llm: ChatOpenAI, state: State):
     res = await chain.ainvoke({"input": state["input"]})
     state["response"] = res.content.strip()
     return state
+
 
 async def ask_phone(llm: ChatOpenAI, state: State):
     prompt = ChatPromptTemplate.from_messages([
@@ -41,6 +43,7 @@ async def ask_phone(llm: ChatOpenAI, state: State):
     state["response"] = res.content.strip()
     return state
 
+
 async def ask_availability(llm: ChatOpenAI, state: State):
     prompt = ChatPromptTemplate.from_messages([
         SystemMessage(f"Ask the user their prefered appiontment date and time. Always respond in {state['chat_language']}."),
@@ -50,7 +53,6 @@ async def ask_availability(llm: ChatOpenAI, state: State):
     res = await chain.ainvoke({"input": state["input"]})
     state["response"] = res.content.strip()
     return state
-
 
 
 async def extract_and_set_data(llm: ChatOpenAI, state: State):
