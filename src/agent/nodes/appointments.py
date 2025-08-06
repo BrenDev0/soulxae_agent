@@ -76,10 +76,14 @@ async def check_availability_tool(state: State) -> State:
     
     url = f"https://{host}/google/calendars/secure/availability"
     headers = {"Authorization": f"Bearer {token}"}
+    req_body = {
+        "slot": state["appointments_state"]["appointment_datetime"],
+        "calendarReferenceId": state["calendar_id"]
+    }
 
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.get(url, headers=headers)
+            response = await client.post(url, headers=headers, json=req_body)
             response.raise_for_status()
             return response.json()["is_available"]
     except httpx.HTTPStatusError as exc:

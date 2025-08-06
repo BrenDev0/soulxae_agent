@@ -11,11 +11,10 @@ class AppointmentState(TypedDict):
 
 class State(TypedDict):
     system_message: str
+    calendar_id: str
     input: str
     conversation_id: str
     token: str
-    agent_id: str
-    user_id: str
     appointments_state: AppointmentState
     response: Optional[str]
     intent: Optional[str] 
