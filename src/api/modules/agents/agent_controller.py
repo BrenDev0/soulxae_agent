@@ -1,4 +1,3 @@
-from fastapi import Request
 from src.agent.state import State
 from src.api.core.services.redis_service import RedisService
 from src.dependencies.container import Container
