@@ -7,6 +7,7 @@ from src.api.core.middleware.middleware_service import MiddlewareService
 from src.api.modules.messaging.messaging_service import MessagingService
 from src.dependencies.container import Container
 from src.api.modules.agents.agent_controller import AgentController
+from src.agent.services.appointments_service import AppoinmentsService
 
 def configure_container():
     # core   
@@ -34,6 +35,13 @@ def configure_container():
     )
     Container.register("prompt_service", prompt_service)
 
+    appointments_service = AppoinmentsService(
+        prompt_service=prompt_service
+    )
+
+    Container.register("appointments_service", appointments_service)
+    
+    
     # modules 
 
     agents_controller = AgentController()

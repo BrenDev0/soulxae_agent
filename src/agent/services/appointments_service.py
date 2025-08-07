@@ -238,8 +238,7 @@ class AppoinmentsService:
     async def __cancel_appointment_tool(state: State):
         host = os.getenv("APP_HOST")
         token = state["token"]
-        print(state["appointments_state"]["appointment_datetime"])
-        print(state["appointments_state"]["email"])
+        
         url = f"https://{host}/google/calendars/secure/events/{state['calendar_id']}"
         headers = {"Authorization": f"Bearer {token}"}
         
