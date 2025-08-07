@@ -12,6 +12,8 @@ class AppointmentState(TypedDict):
 class State(TypedDict):
     system_message: str
     calendar_id: str
+    max_tokens: int
+    temperature: float
     input: str
     conversation_id: str
     token: str
