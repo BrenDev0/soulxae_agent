@@ -199,6 +199,7 @@ class AppoinmentsService:
         except httpx.HTTPStatusError as exc:
             print(f"Availability equest failed: {exc.response.status_code} - {exc.response.text}")
             return {"error": exc.response.text, "status_code": exc.response.status_code}
+       
         
     @staticmethod
     async def __create_appoinment_tool(state: State) -> State:
