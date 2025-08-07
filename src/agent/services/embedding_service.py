@@ -42,7 +42,8 @@ class EmbeddingService:
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document': UnstructuredWordDocumentLoader
         }
 
-    def get_collection_name(self, user_id: str, agent_id: str) -> str:
+    @staticmethod
+    def get_collection_name(user_id: str, agent_id: str) -> str:
         """Generate standardized collection names."""
         return f"user_{user_id}_agent_{agent_id}"
     

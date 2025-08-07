@@ -24,7 +24,8 @@ class WebTokenService:
     def decode_token(self, token: str) -> Union[Dict[str, Any], None]:
         return jwt.decode(token, self.token_key, algorithms=["HS256"])
 
-    def _parse_expiration(self, exp: Union[str, int]) -> int:
+    @staticmethod
+    def _parse_expiration(exp: Union[str, int]) -> int:
         if isinstance(exp, int):
             return exp
         if isinstance(exp, str):
