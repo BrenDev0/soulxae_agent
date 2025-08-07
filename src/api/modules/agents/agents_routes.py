@@ -42,7 +42,6 @@ async def interact(
     controller: AgentController = Depends(get_controller) 
 ):
     return await controller.interact(
-        data=data,
         state=state,
         graph=graph,
         background_tasks=background_tasks
