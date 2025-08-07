@@ -2,7 +2,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, END, START
 from src.agent.nodes.classify_intent import classify_intent
 from src.agent.nodes.general_query import general_query
-from src.agent.nodes.appointments import ask_availability, ask_email, ask_name, ask_phone, extract_and_set_data, appointment_router, check_avialablitly
+from src.agent.nodes.appointments import ask_availability, ask_email, ask_name, ask_phone, extract_and_set_data, appointment_router, check_avialablitly, cancel_appointment
 from src.agent.nodes.agent_handoff import agent_handoff
 from src.agent.state import State
 
@@ -39,7 +39,9 @@ def create_graph(llm: ChatOpenAI):
     async def check_availability_node(state):
         return await check_avialablitly(llm, state)
     
-
+    async def cancel_appointment_node(state):
+        return await cancel_appointment(llm, state)
+    
     graph.add_node("classify_intent", classify_intent_node)
     graph.add_node("general_query", general_query_node) 
     graph.add_node("hand_off", agent_handoff_node)
@@ -50,7 +52,7 @@ def create_graph(llm: ChatOpenAI):
     graph.add_node("ask_phone", ask_phone_node)
     graph.add_node("ask_availability", ask_availability_node)
     graph.add_node("check_availability", check_availability_node)
-    
+    graph.add_node("cancel_appointment", cancel_appointment_node)
 
     graph.add_edge(START, "classify_intent")
     graph.add_edge("general_query", END)
@@ -61,6 +63,7 @@ def create_graph(llm: ChatOpenAI):
     graph.add_edge("ask_phone", END)
     graph.add_edge("ask_availability", END)
     graph.add_edge("check_availability", END)
+    graph.add_edge("cancel_appointment", END)
 
     graph.add_conditional_edges(
         "classify_intent", 
@@ -68,7 +71,8 @@ def create_graph(llm: ChatOpenAI):
         {
             "general_query": "general_query",
             "human": "hand_off",
-            "appointment": "appointment"
+            "new_appointment": "appointment",
+            "cancel_appointment": "appointment"
             
         }
     )
@@ -81,7 +85,8 @@ def create_graph(llm: ChatOpenAI):
             "ask_email": "ask_email",
             "ask_phone": "ask_phone",
             "ask_availability": "ask_availability",
-            "check_availability": "check_availability"
+            "check_availability": "check_availability",
+            "cancel_appointment": "cancel_appointment"
         }
     )
 

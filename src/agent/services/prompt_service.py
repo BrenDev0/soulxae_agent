@@ -15,11 +15,12 @@ class PromptService:
         state: State
     ):
         system_message = """
-            Classify the user's intent and determine their language. Intent options: "general_query", "appointment", "human".
+            Classify the user's intent and determine their language. Intent options: "general_query", "new_appointment", cancel_appointment, "human".
             Use the context of the conversation to guide your decision:
             - "general_query" is for all types of questions and information.
             - If the user expresses any interest in speaking to a human representative, the intent will be "human".
-            - If the user wants to book an appointment, the intent will be "appointment".
+            - If the user wants to book an appointment, the intent will be "new_appointment".
+            - if the user wants to cancel an appointment, the intent will be "cancel_appointment".
             Your response should always be like the example below:
             {
                 "language": "spanish",
@@ -62,7 +63,8 @@ class PromptService:
         if context:
             print(context)
             messages.append(SystemMessage(content=f"""
-                You have access to the following relevant context retrieved from documents. Use this information to inform your response. Do not make up facts outside of this context.
+                You have access to the following relevant context retrieved from documents.
+                Use this information to inform your response. Do not make up facts outside of this context.
 
                 Relevant context:
                 {context}

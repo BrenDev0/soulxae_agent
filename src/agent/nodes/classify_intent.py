@@ -18,7 +18,7 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     
     intent = data.get("intent", None)
     if intent:
-        valid_intents = {"general_query", "appointment", "human"}
+        valid_intents = {"general_query", "new_appointment", "cancel_appointment", "human"}
         if intent not in valid_intents:
             intent = "human"  
     else: 
