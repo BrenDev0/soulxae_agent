@@ -50,7 +50,7 @@ class PromptService:
 
         messages = [
             SystemMessage(content=state["system_message"]),
-            SystemMessage(content="IMPORTANT! you will always respond in the language of the input")
+            SystemMessage(content=f"IMPORTANT! you will always respond in {state['chat_language']}")
         ]
 
         context = await self.embedding_service.search_for_context(
