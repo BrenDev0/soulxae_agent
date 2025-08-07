@@ -24,12 +24,13 @@ class AgentController:
         return { "data": final_state["response"]}
 
 
-    
-    async def handle_state(self, state: State):
-        redis_service: RedisService = Container.resolve("redis_service")
-        await redis_service.set_session(f"conversation_state:{state['conversation_id']}", state)
-
 
     async def hanlde_interaction(self, state: State, graph):
         final_state: State = await graph.ainvoke(state)
         await self.handle_state(final_state)
+    
+
+    @staticmethod
+    async def handle_state(state: State):
+        redis_service: RedisService = Container.resolve("redis_service")
+        await redis_service.set_session(f"conversation_state:{state['conversation_id']}", state)
