@@ -3,6 +3,7 @@ from src.api.core.services.redis_service import RedisService
 from src.dependencies.container import Container
 from src.api.modules.agents.agents_models import InteractionRequest
 from fastapi import BackgroundTasks
+from src.api.modules.messaging.messaging_service import MessagingService
 
 
 class AgentController:
@@ -26,7 +27,12 @@ class AgentController:
 
 
     async def hanlde_interaction(self, state: State, graph):
+        messaging_service: MessagingService = Container.resolve("messaging_service")
+
         final_state: State = await graph.ainvoke(state)
+
+        await messaging_service.send_message(final_state["response"], state["token"], state["conversation_id"])
+
         await self.handle_state(final_state)
     
 

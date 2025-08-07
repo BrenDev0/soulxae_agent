@@ -4,11 +4,7 @@ from src.api.core.services.webtoken_service import WebTokenService
 
 
 class MessagingService:
-    async def send_message(self, text: str, user_id: str, conversation_id: str): 
-        print(text)
-        webtoken_service: WebTokenService = Container.resolve("webtoken_service")
-        token = webtoken_service.generate_token({"userId": user_id}, "2m")
-
+    async def send_message(self, text: str, token: str, conversation_id: str): 
         url = f"https://soulxae.up.railway.app/direct/secure/send"
         headers = {"Authorization": f"Bearer {token}"}
         data = {
