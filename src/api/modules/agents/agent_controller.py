@@ -1,7 +1,6 @@
 from src.agent.state import State
 from src.api.core.services.redis_service import RedisService
 from src.dependencies.container import Container
-from src.api.modules.agents.agents_models import InteractionRequest
 from fastapi import BackgroundTasks
 from src.api.modules.messaging.messaging_service import MessagingService
 
