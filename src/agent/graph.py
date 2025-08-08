@@ -19,7 +19,7 @@ def create_graph(llm: ChatOpenAI):
     async def general_query_node(state):
         return await general_query(llm, state)
     
-
+    # Appointments
     appointments_service: AppoinmentsService = Container.resolve("appointments_service") 
     
     async def extract_appointment_data_node(state):

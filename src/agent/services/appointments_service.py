@@ -90,8 +90,6 @@ class AppoinmentsService:
             Only respond in {state['chat_language']}
             """
         else:
-            state["appointments_state"]["appointment_datetime"] = None
-
             available_slots = await self.__get_available_slots(state)
             if available_slots:
                 slots_text = "\n".join([f"{slot}" for slot in available_slots[:3]])
@@ -114,7 +112,7 @@ class AppoinmentsService:
         response = await llm.ainvoke(prompt)
         
         state["response"] = response.content.strip()
-
+        state["appointments_state"]["appointment_datetime"] = None
         return state
 
 
@@ -143,16 +141,20 @@ class AppoinmentsService:
         return state
 
     @staticmethod
-    async def get_available_slots(state):
+    async def __get_available_slots(state: State):
         host = os.getenv("APP_HOST")
         token = state["token"]
         
-        url = f"https://{host}/calendars/secure/event"
+        url = f"https://{host}/google/calendars/secure/get-slots/{state['calendar_id']}"
         headers = {"Authorization": f"Bearer {token}"}
+        params = {
+            "startTime": state["appointments_state"]["appointment_datetime"]
+        }
+        print(params)
 
         try:
             async with httpx.AsyncClient() as client:
-                response = await client.post(url, headers=headers)
+                response = await client.get(url, headers=headers, params=params)
                 response.raise_for_status()
                 return response.json()["data"]
             
