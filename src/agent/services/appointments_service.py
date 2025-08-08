@@ -18,9 +18,9 @@ class AppoinmentsService:
         
         chain = prompt | llm
         
-        res = await chain.ainvoke({"input": state["input"]})
+        response = await chain.ainvoke({"input": state["input"]})
         
-        state["response"] = res.content.strip()
+        state["response"] = response.content.strip()
         
         return state
 
@@ -31,9 +31,9 @@ class AppoinmentsService:
         
         chain = prompt | llm
         
-        res = await chain.ainvoke({"input": state["input"]})
+        response = await chain.ainvoke({"input": state["input"]})
         
-        state["response"] = res.content.strip()
+        state["response"] = response.content.strip()
         
         return state
 
@@ -44,9 +44,9 @@ class AppoinmentsService:
         
         chain = prompt | llm
         
-        res = await chain.ainvoke({"input": state["input"]})
+        response = await chain.ainvoke({"input": state["input"]})
         
-        state["response"] = res.content.strip()
+        state["response"] = response.content.strip()
         
         return state
 
@@ -57,9 +57,9 @@ class AppoinmentsService:
         
         chain = prompt | llm
         
-        res = await chain.ainvoke({"input": state["input"]})
+        response = await chain.ainvoke({"input": state["input"]})
         
-        state["response"] = res.content.strip()
+        state["response"] = response.content.strip()
         
         return state
 
@@ -68,9 +68,9 @@ class AppoinmentsService:
         prompt = self._prompt_service.appointment_data_extraction_prompt(state=state)
         
         chain = prompt | llm
-        res = await chain.ainvoke({"input": state["input"]})
+        response = await chain.ainvoke({"input": state["input"]})
     
-        parsed = json.loads(res.content)
+        parsed = json.loads(response.content)
     
         # Update state
         appointment = state["appointments_state"]
@@ -86,7 +86,7 @@ class AppoinmentsService:
 
         if is_available:
             await self.__create_appoinment_tool(state)
-            prompt = f"""Let the user know youve booked their appointment and thank them for thier time. 
+            system_message = f"""Let the user know youve booked their appointment and thank them for thier time. 
             Only respond in {state['chat_language']}
             """
         else:
@@ -94,7 +94,7 @@ class AppoinmentsService:
             if available_slots:
                 slots_text = "\n".join([f"{slot}" for slot in available_slots[:3]])
 
-                prompt = f"""
+                system_message = f"""
                 The user's requested time ({state['appointments_state']['appointment_datetime']}) is not available.
                 Show them these alternative options in a conversational format:
                 {slots_text}
@@ -103,17 +103,21 @@ class AppoinmentsService:
                 Be helpful and friendly.Only respond in {state['chat_language']}.
                 """
             else: 
-                prompt = f"""
+                system_message = f"""
                 The user's requested time ({state['appointments_state']['appointment_datetime']}) is not available.
                 Ask them  to provide an alternative date and time for thier appointment.
                 Be helpful and friendly. Only respond in {state['chat_language']}.
                 """
         
-        response = await llm.ainvoke(prompt)
+        prompt = self._prompt_service.custom_prompt_template(state=state, system_message=system_message)
+        
+        chain = prompt | llm
+        
+        response = await chain.ainvoke({"input": state["input"]})
         
         state["response"] = response.content.strip()
         state["appointments_state"]["appointment_datetime"] = None
-        return state
+        return system_message
 
 
     async def cancel_appointment(self, llm: ChatOpenAI, state: State): 
@@ -121,20 +125,24 @@ class AppoinmentsService:
 
         if not appointment_canceled:
             await agent_handoff_tool(state=state)
-            prompt = f"""
+            system_message = f"""
             The users appoinment was unable to be canceled.
             let them know you will tranfer the issue to a human representative that will reach out at the earliest convenience.
             Be friendly. Only respond in {state['chat_language']}.
             """        
             
         else: 
-            prompt = f"""
+            system_message = f"""
             The user has requested to cancel thier appointmnet.
             Let the user know that youve canceled thier appointment.
             Be friendly. Only respond in {state['chat_language']}.
             """
             
-        response = await llm.ainvoke(prompt)
+        prompt = self._prompt_service.custom_prompt_template(state=state, system_message=system_message)
+        
+        chain = prompt | llm
+        
+        response = await chain.ainvoke({"input": state["input"]})
 
         state["response"] = response.content.strip()
 

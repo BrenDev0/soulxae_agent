@@ -29,7 +29,8 @@ async def agent_handoff(llm: ChatOpenAI, state: State):
     prompt_service: PromptService = Container.resolve("prompt_service")
 
     system_message = f"""
-        The client has requested to speak with a human representative, or theyve requested help in a service that you cannot provide please let them  know that you will tranfer them
+        The client has requested to speak with a human representative,
+        or theyve requested help in a service that you cannot provide please let them  know that you will tranfer them
         only answer in {state['chat_language']}
     """
 
