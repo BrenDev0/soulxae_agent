@@ -50,7 +50,7 @@ class PromptService:
 
         messages = [
             SystemMessage(content=state["system_message"]),
-            SystemMessage(content="IMPORTANT! your answer will be 1000 chars or less."),
+            SystemMessage(content="IMPORTANT! your answer will be 1000 characters or less."),
             SystemMessage(content=f"IMPORTANT! you will always respond in {state['chat_language']}")
         ]
 
