@@ -2,6 +2,8 @@ import httpx
 import os
 from src.agent.state import State
 from langchain_openai import ChatOpenAI
+from src.dependencies.container import Container
+from src.agent.services.prompt_service import PromptService
 
 async def agent_handoff_tool(state: State) -> State:
     host = os.getenv("APP_HOST")
@@ -24,12 +26,18 @@ async def agent_handoff_tool(state: State) -> State:
 async def agent_handoff(llm: ChatOpenAI, state: State):
     await agent_handoff_tool(state=state)
     
-    prompt = f"""
-        The client has requested to speak with a human representative please let them  know that you will tranfer them
+    prompt_service: PromptService = Container.resolve("prompt_service")
+
+    system_message = f"""
+        The client has requested to speak with a human representative, or theyve requested help in a service that you cannot provide please let them  know that you will tranfer them
         only answer in {state['chat_language']}
     """
 
-    response = await llm.ainvoke(prompt)
+    prompt = prompt_service.custom_prompt_template(state=state, system_message=system_message)
+        
+    chain = prompt | llm
+    
+    response = await chain.ainvoke({"input": state["input"]})
 
     state["response"] = response.content.strip()
 
