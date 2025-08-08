@@ -11,7 +11,7 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     
     chain = prompt | llm
     response = await chain.ainvoke({"input": state["input"]})
-    print(response.content)
+   
     data = json.loads(response.content)
 
     intent = data.get("intent", None)
@@ -22,7 +22,9 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     else: 
         intent= "human"
     
-    
+    if (intent == "new_appointment" or intent == "cancel_appointment") and not state.get("calendar_id"):
+        intent = "human"
+        
     language = data.get("language", None)
     if language:
         state["chat_language"] = language
