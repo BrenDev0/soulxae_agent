@@ -30,8 +30,9 @@ async def agent_handoff(llm: ChatOpenAI, state: State):
 
     system_message = f"""
         The client has requested to speak with a human representative,
-        or theyve requested help in a service that you cannot provide please let them  know that you will tranfer them
-        only answer in {state['chat_language']}
+        or theyve requested help in a service that you cannot provide.
+        Let them  know that you will tranfer them, and an agent will be with them at the earliest convenience.
+        Only answer in {state['chat_language']}
     """
 
     prompt = prompt_service.custom_prompt_template(state=state, system_message=system_message)
