@@ -57,5 +57,5 @@ class AgentController:
         if len(chat_history) > chat_history_limit:
             chat_history.pop()  
 
-
+        print(state, "STate::::::::::::::::")
         await redis_service.set_session(f"conversation_state:{state['conversation_id']}", state)
