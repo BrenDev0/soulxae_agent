@@ -36,6 +36,26 @@ class AgentController:
     
 
     @staticmethod
-    async def handle_state(state: State):
+    async def handle_state(state: State, chat_history_limit: int = 16):
         redis_service: RedisService = Container.resolve("redis_service")
+        human_message = {
+            "sender": "client",
+            "text": state["input"]
+        }
+        ai_message = {
+            "sender": "agent",
+            "text": state["response"]
+        }
+
+        chat_history = state["chat_history"]
+
+        chat_history.insert(0, human_message.model_dump(exclude="chat_id"))
+        if len(chat_history) > chat_history_limit:
+            chat_history.pop()  
+
+        chat_history.insert(0, ai_message.model_dump(exclude="chat_id"))
+        if len(chat_history) > chat_history_limit:
+            chat_history.pop()  
+
+
         await redis_service.set_session(f"conversation_state:{state['conversation_id']}", state)
