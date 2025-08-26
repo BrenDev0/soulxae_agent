@@ -20,11 +20,13 @@ async def get_state(data: InteractionRequest = Body(...)) -> State:
     return state
 
 async def get_graph(state: State = Depends(get_state)): 
+    temperature = float(state.get("temperature", 0.2))
+    max_tokens = int(state.get("max_tokens", 3000))
     llm = ChatOpenAI(
-            model="gpt-4o",
-            temperature=state["temperature"],
-            max_completion_tokens=state["max_tokens"]
-        )
+        model="gpt-4o",
+        temperature=temperature,
+        max_completion_tokens=max_tokens
+    )
     return create_graph(llm)
 
 def get_controller():
