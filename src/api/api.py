@@ -3,7 +3,6 @@ from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.modules.agents import agents_routes
 from src.api.modules.files import files_routes
-from src.api.core.middleware.auth_middleware import auth_middleware
 from src.dependencies.configure_container import configure_container
 
 @asynccontextmanager
@@ -22,7 +21,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.middleware("http")(auth_middleware)
 
 app.include_router(agents_routes.router)
 app.include_router(files_routes.router)

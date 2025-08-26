@@ -6,6 +6,7 @@ from langchain_openai import ChatOpenAI
 from src.api.modules.agents.agent_controller import AgentController
 from src.api.core.services.redis_service import RedisService
 from src.agent.state import State
+from src.api.core.middleware.hmac_verification import verify_hmac
 
 router = APIRouter(
     prefix="/api/agent",
@@ -39,6 +40,7 @@ def get_controller():
 async def interact(
     background_tasks: BackgroundTasks,
     data: InteractionRequest = Body(...),
+    _: None = Depends(verify_hmac),
     state: State = Depends(get_state),
     graph = Depends(get_graph),
     controller: AgentController = Depends(get_controller) 
