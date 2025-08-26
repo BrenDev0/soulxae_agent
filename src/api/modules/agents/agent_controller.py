@@ -12,16 +12,16 @@ class AgentController:
         graph,
         background_tasks: BackgroundTasks
     ): 
-        ## use only when meta is connected
-        # background_tasks.add_task(self.hanlde_interaction, state, graph)
+        # use only when meta is connected
+        background_tasks.add_task(self.hanlde_interaction, state, graph)
         
-        # return 
+        return 
 
         ## only for testing 
-        final_state: State = await graph.ainvoke(state)
-        background_tasks.add_task(self.handle_state, final_state)
+        # final_state: State = await graph.ainvoke(state)
+        # background_tasks.add_task(self.handle_state, final_state)
 
-        return { "data": final_state["response"]}
+        # return { "data": final_state["response"]}
 
 
 
