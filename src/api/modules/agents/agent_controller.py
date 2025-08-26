@@ -49,11 +49,11 @@ class AgentController:
 
         chat_history = state["chat_history"]
 
-        chat_history.insert(0, human_message.model_dump(exclude="chat_id"))
+        chat_history.insert(0, human_message)
         if len(chat_history) > chat_history_limit:
             chat_history.pop()  
 
-        chat_history.insert(0, ai_message.model_dump(exclude="chat_id"))
+        chat_history.insert(0, ai_message)
         if len(chat_history) > chat_history_limit:
             chat_history.pop()  
 
