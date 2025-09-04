@@ -29,7 +29,7 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     llm = llm.with_structured_output(ClassifyIntentOutput)
     chain = prompt | llm
     response = await chain.ainvoke({"input": state["input"]})
-
+    print(response, "INTENT:::::::::::")
     try:
         data: ClassifyIntentOutput = json.loads(response.content)
     except Exception:
@@ -38,7 +38,7 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
         return state
 
     intent = data.intent
-    print(intent, "INTENT:::::::::::")
+    
     if intent:
         valid_intents = {"general_query", "new_appointment", "cancel_appointment", "human"}
         if intent not in valid_intents:
