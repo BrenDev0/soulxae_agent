@@ -31,13 +31,13 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     response = await chain.ainvoke({"input": state["input"]})
 
     try:
-        data = json.loads(response.content)
+        data: ClassifyIntentOutput = json.loads(response.content)
     except Exception:
         state["intent"] = "human"
         state["chat_language"] = "spanish"
         return state
 
-    intent = data.get("intent", None)
+    intent = data.intent
     if intent:
         valid_intents = {"general_query", "new_appointment", "cancel_appointment", "human"}
         if intent not in valid_intents:
@@ -48,7 +48,7 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     if (intent == "new_appointment" or intent == "cancel_appointment") and not state.get("calendar_id"):
         intent = "human"
         
-    language = data.get("language", None)
+    language = data.language
     if language:
         state["chat_language"] = language
     else:
