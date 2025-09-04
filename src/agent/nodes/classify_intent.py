@@ -38,6 +38,7 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
         return state
 
     intent = data.intent
+    print(intent, "INTENT:::::::::::")
     if intent:
         valid_intents = {"general_query", "new_appointment", "cancel_appointment", "human"}
         if intent not in valid_intents:
