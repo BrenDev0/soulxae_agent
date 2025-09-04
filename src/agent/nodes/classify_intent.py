@@ -29,15 +29,8 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     llm = llm.with_structured_output(ClassifyIntentOutput)
     chain = prompt | llm
     response = await chain.ainvoke({"input": state["input"]})
-    print(response, "INTENT:::::::::::")
-    try:
-        data: ClassifyIntentOutput = json.loads(response.content)
-    except Exception:
-        state["intent"] = "human"
-        state["chat_language"] = "spanish"
-        return state
-
-    intent = data.intent
+   
+    intent = response.intent
     
     if intent:
         valid_intents = {"general_query", "new_appointment", "cancel_appointment", "human"}
@@ -49,7 +42,7 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     if (intent == "new_appointment" or intent == "cancel_appointment") and not state.get("calendar_id"):
         intent = "human"
         
-    language = data.language
+    language = response.language
     if language:
         state["chat_language"] = language
     else:
