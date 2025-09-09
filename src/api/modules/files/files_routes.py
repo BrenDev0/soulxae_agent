@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Body, Request
+from fastapi import APIRouter, Body, Request, Depends
 from fastapi.responses import JSONResponse
 from src.dependencies.container import Container
 from src.agent.services.embedding_service import EmbeddingService
 from src.api.modules.files.files_models import UploadRequest
+from src.api.core.middleware.hmac_verification import verify_hmac
 
 router = APIRouter(
     prefix="/api/files",
@@ -13,10 +14,11 @@ router = APIRouter(
 @router.post("/upload", response_class=JSONResponse)
 async def upload_docs(
     request: Request,
-    data: UploadRequest = Body(...)
+    data: UploadRequest = Body(...),
+    _: None = Depends(verify_hmac)
 ):
     try:
-        user_id = request.state.user_id
+        user_id = data.user_id
         s3_url = data.s3_url
         file_type = data.file_type
         filename = data.filename
