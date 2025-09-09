@@ -8,10 +8,17 @@ from src.api.modules.messaging.messaging_service import MessagingService
 from src.dependencies.container import Container
 from src.api.modules.agents.agent_controller import AgentController
 from src.agent.services.appointments_service import AppoinmentsService
+from qdrant_client import QdrantClient
+import os
 
 def configure_container():
     # core   
-    embedding_service = EmbeddingService()
+    qdrant_client = QdrantClient(
+        url=os.getenv("QDRANT_URL"),
+        api_key=os.getenv("QDRANT_API_KEY")
+    )
+
+    embedding_service = EmbeddingService(client=qdrant_client)
     Container.register("embedding_service", embedding_service)
 
     messaging_service = MessagingService()
