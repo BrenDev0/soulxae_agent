@@ -1,28 +1,21 @@
-from langchain_community.document_loaders import (
-    PyPDFLoader,
-    TextLoader,
-    CSVLoader,
-    UnstructuredExcelLoader,
-    UnstructuredWordDocumentLoader
-)
+from langchain_community.document_loaders import PyPDFLoader, TextLoader, CSVLoader
 from qdrant_client import QdrantClient
-from qdrant_client.http.models import Distance, VectorParams
+from qdrant_client.http.models import Distance, VectorParams, Filter, FieldCondition, MatchValue
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
+from src.utils.decorators.service_error_handler import service_error_handler
 import os
-from typing import Optional, List, Dict
 import uuid
-import time
-from langchain_core.documents import Document
+from typing import Dict, Any
+from uuid import UUID
 
 class EmbeddingService:
-    def __init__(self, embedding_model=None):
-        self.client = QdrantClient(
-            url=os.getenv("QDRANT_URL"),
-            api_key=os.getenv("QDRANT_API_KEY")
-        )
+    __MODULE = "embeddings.service"
+    
+    def __init__(self, client: QdrantClient):
+        self.client = client
         
-        self.embedding_model = embedding_model or OpenAIEmbeddings(
+        self.embedding_model = OpenAIEmbeddings(
             model="text-embedding-3-large",
             openai_api_key=os.getenv("OPENAI_API_KEY")
         )
@@ -31,156 +24,122 @@ class EmbeddingService:
             chunk_size=1000,
             chunk_overlap=200
         )
-        
-        self.loader_mapping = {
-            'application/pdf': PyPDFLoader,
-            'text/plain': TextLoader,
-            'text/csv': CSVLoader,
-            'application/vnd.ms-excel': UnstructuredExcelLoader,
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': UnstructuredExcelLoader,
-            'application/msword': UnstructuredWordDocumentLoader,
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': UnstructuredWordDocumentLoader
-        }
 
-    @staticmethod
-    def get_collection_name(user_id: str, agent_id: str) -> str:
-        """Generate standardized collection names."""
-        return f"user_{user_id}_agent_{agent_id}"
+    @service_error_handler(__MODULE)
+    def get_collection_name(self, user_id: str, company_id: str) -> str:
+        return f"user_{user_id}_agent_{company_id}"
     
-    async def create_collection(self, user_id: str, agent_id: str) -> bool:
-        collection_name = self.get_collection_name(user_id, agent_id)
+    @service_error_handler(__MODULE)
+    def ensure_collection_exists(self, user_id: str, company_id: str) -> None:
+        collection_name = self.get_collection_name(user_id, company_id)
+        
         try:
             self.client.get_collection(collection_name)
-            return False  
-        except:
+        except Exception:
             self.client.create_collection(
                 collection_name=collection_name,
-                vectors_config=VectorParams(
-                    size=3072,
-                    distance=Distance.COSINE
-                ),
+                vectors_config=VectorParams(size=3072, distance=Distance.COSINE)
             )
-            return True
 
-    async def delete_user_data(self, user_id: str) -> int: 
-        deleted = 0
-        collections = self.client.get_collections()
-        prefix = f"user_{user_id}_agent_"
-        
-        for collection in collections.collections:
-            if collection.name.startswith(prefix):
-                self.client.delete_collection(collection.name)
-                deleted += 1
-        return deleted
-
-    async def _load_document_from_url(
+    @service_error_handler(__MODULE)
+    async def add_document(
         self,
         s3_url: str,
-        file_type: str,
-        filename: str
-    ) -> List[Dict]:
-        loader_class = self.loader_mapping.get(file_type)
-        if not loader_class:
-            raise ValueError(f"Unsupported file type: {file_type}")
+        filename: str,
+        user_id: str,
+        agent_id: str
+    ) -> Dict[str, Any]:
+        self.ensure_collection_exists(user_id, agent_id)
+        collection_name = self.get_collection_name(user_id, agent_id)
 
-        loader = loader_class(s3_url)
+        if filename.endswith('.pdf'):
+            loader = PyPDFLoader(s3_url)
+        elif filename.endswith('.txt'):
+            loader = TextLoader(s3_url)
+        elif filename.endswith('.csv'):
+            loader = CSVLoader(s3_url)
+        else:
+            raise ValueError(f"Unsupported file type: {filename}")
+
         documents = loader.load()
         chunks = self.text_splitter.split_documents(documents)
 
-        return [{
-            "text": chunk.page_content,
-            "metadata": {
-                **chunk.metadata,
-                "original_filename": filename,
-                "chunk_id": str(uuid.uuid4())
-            }
-        } for chunk in chunks]
-
-    async def embed_uploaded_document(
-        self,
-        s3_url: str,
-        file_type: str,
-        filename: str,
-        user_id: str,
-        agent_id: str,
-        custom_metadata: Optional[Dict] = None
-    ) -> Dict:
-        collection_name = self.get_collection_name(user_id, agent_id)
-        await self.create_collection(user_id, agent_id)
-
-        chunks = await self._load_document_from_url(s3_url, file_type, filename)
-
-        texts = [chunk["text"] for chunk in chunks]
+        texts = [chunk.page_content for chunk in chunks]
         embeddings = await self.embedding_model.aembed_documents(texts)
 
         points = []
         for chunk, embedding in zip(chunks, embeddings):
-            metadata = {
-                "user_id": user_id,
-                "agent_id": agent_id,
-                "upload_timestamp": int(time.time()),
-                **chunk["metadata"]
-            }
-
-            if custom_metadata:
-                metadata.update(custom_metadata)
-
             points.append({
                 "id": str(uuid.uuid4()),
                 "vector": embedding,
                 "payload": {
-                    "text": chunk["text"],
-                    "metadata": metadata
+                    "text": chunk.page_content,
+                    "filename": filename,
+                    "user_id": user_id,
+                    "agent_id": agent_id
                 }
             })
 
-        self.client.upsert(
-            collection_name=collection_name,
-            points=points
-        )
+        self.client.upsert(collection_name=collection_name, points=points)
 
         return {
             "status": "success",
             "chunks_processed": len(points),
-            "collection": collection_name,
-            "document_id": str(uuid.uuid4())
+            "collection": collection_name
         }
 
-    async def search_for_context(
-        self,
-        input: str,
-        agent_id: str,
-        user_id: str,
-        tok_k: int = 4
-    ) -> List[Document]:
-        collection_name = self.get_collection_name(user_id=user_id, agent_id=agent_id)
-        query_embedding = await self.embedding_model.aembed_query(input)
-
-        search_results = self.client.search(
+    @service_error_handler(__MODULE)
+    def delete_document_data(self, user_id: str, agent_id: str, filename: str) -> Dict[str, Any]:
+        """Delete all embeddings for a specific document"""
+        collection_name = self.get_collection_name(user_id, agent_id)
+        
+        points_filter = Filter(
+            must=[
+                FieldCondition(key="filename", match=MatchValue(value=filename)),
+                FieldCondition(key="user_id", match=MatchValue(value=user_id)),
+                FieldCondition(key="agent_id", match=MatchValue(value=agent_id))
+            ]
+        )
+        
+        result = self.client.delete(
             collection_name=collection_name,
-            query_vector=query_embedding,
-            limit=tok_k,
-            with_payload=True
+            points_selector=points_filter
         )
+        
+        return {
+            "status": "success",
+            "operation": "delete_document",
+            "filename": filename,
+            "collection": collection_name
+        }
 
-        if not search_results:
-            return None
+    @service_error_handler(__MODULE)
+    def delete_agent_data(self, user_id: str, agent_id: str) -> Dict[str, Any]:
+        """Delete entire collection for an agent (all documents)"""
+        collection_name = self.get_collection_name(user_id, agent_id)
+        
+        self.client.delete_collection(collection_name)
+        return {
+            "status": "success",
+            "operation": "delete_company",
+            "collection_deleted": collection_name
+        }
 
-        docs =  [
-            Document(
-                page_content=item.payload["text"]
-            ) for item in search_results
-        ]
-
-        return  "\n\n".join([doc.page_content for doc in docs])
-
-
-    def scroll(self, user_id: str, agent_id: str):
-        results, _ = self.client.scroll(
-            collection_name=f"user_{user_id}_agent_{agent_id}",
-            limit=10,
-            with_payload=True
-        )
-
-        for point in results:
-            print(point.payload)
+    @service_error_handler(__MODULE)
+    def delete_user_data(self, user_id: str) -> Dict[str, Any]:
+        """Delete all collections for a user (across all agents)"""
+        collections = self.client.get_collections()
+        user_prefix = f"user_{user_id}_agent_"
+        deleted_collections = []
+        
+        for collection in collections.collections:
+            if collection.name.startswith(user_prefix):
+                self.client.delete_collection(collection.name)
+                deleted_collections.append(collection.name)
+        
+        return {
+            "status": "success",
+            "operation": "delete_user",
+            "collections_deleted": deleted_collections,
+            "count": len(deleted_collections)
+        }
