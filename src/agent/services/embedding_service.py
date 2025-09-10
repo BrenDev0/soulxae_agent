@@ -40,6 +40,9 @@ class EmbeddingService:
                 collection_name=collection_name,
                 vectors_config=VectorParams(size=3072, distance=Distance.COSINE)
             )
+            self.client.create_payload_index(collection_name=collection_name, field_name="filename", field_schema="keyword")
+            self.client.create_payload_index(collection_name=collection_name, field_name="user_id", field_schema="keyword")
+            self.client.create_payload_index(collection_name=collection_name, field_name="agent_id", field_schema="keyword")
 
     @service_error_handler(__MODULE)
     async def add_document(

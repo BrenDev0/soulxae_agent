@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, Request, Depends
+from fastapi import APIRouter, Body, Request, Depends, BackgroundTasks
 from fastapi.responses import JSONResponse
 from src.dependencies.container import Container
 from src.agent.services.embedding_service import EmbeddingService
@@ -13,6 +13,7 @@ router = APIRouter(
 
 @router.post("/upload", response_class=JSONResponse)
 async def upload_docs(
+    backgroud_tasks: BackgroundTasks,
     data: UploadRequest = Body(...),
     _: None = Depends(verify_hmac)
 ):
@@ -23,18 +24,16 @@ async def upload_docs(
         filename = data.filename
         agent_id = data.agent_id
 
-
         embedding_service: EmbeddingService = Container.resolve("embedding_service") 
-        status = await embedding_service.add_document(
+        backgroud_tasks.add_task(
+            embedding_service.add_document,
             s3_url = s3_url,
             filename=filename,
             user_id=user_id,
-            agent_id=agent_id,
+            agent_id=agent_id
         )
-
-        print(status)
 
     except Exception as e:
         print(e)
     
-    return JSONResponse(status_code=200, content={"message": "Document added to vector store"});
+    return JSONResponse(status_code=202, content={"message": "Request received"});
