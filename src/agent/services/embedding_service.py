@@ -81,7 +81,7 @@ class EmbeddingService:
             })
 
         # --- Batching upserts to avoid Qdrant payload limit ---
-        BATCH_SIZE = 1000  # You can adjust this as needed
+        BATCH_SIZE = 200  # You can adjust this as needed
 
         def batch(iterable, n=1):
             l = len(iterable)
