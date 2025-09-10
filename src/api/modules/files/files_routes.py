@@ -13,14 +13,13 @@ router = APIRouter(
 
 @router.post("/upload", response_class=JSONResponse)
 async def upload_docs(
-    request: Request,
     data: UploadRequest = Body(...),
     _: None = Depends(verify_hmac)
 ):
     try:
+        print("in route")
         user_id = data.user_id
         s3_url = data.s3_url
-        file_type = data.file_type
         filename = data.filename
         agent_id = data.agent_id
 
@@ -35,7 +34,7 @@ async def upload_docs(
 
         print(status)
 
-        return JSONResponse(status_code=200, content={"message": "Document added to vector store"});
-
     except Exception as e:
         print(e)
+    
+    return JSONResponse(status_code=200, content={"message": "Document added to vector store"});
