@@ -26,9 +26,8 @@ async def upload_docs(
 
 
         embedding_service: EmbeddingService = Container.resolve("embedding_service") 
-        status = await embedding_service.embed_uploaded_document(
+        status = await embedding_service.add_document(
             s3_url = s3_url,
-            file_type=file_type,
             filename=filename,
             user_id=user_id,
             agent_id=agent_id,
