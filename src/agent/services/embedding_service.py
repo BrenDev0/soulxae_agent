@@ -80,7 +80,17 @@ class EmbeddingService:
                 }
             })
 
-        self.client.upsert(collection_name=collection_name, points=points)
+        # --- Batching upserts to avoid Qdrant payload limit ---
+        BATCH_SIZE = 200  # You can adjust this as needed
+
+        def batch(iterable, n=1):
+            l = len(iterable)
+            for ndx in range(0, l, n):
+                yield iterable[ndx:min(ndx + n, l)]
+
+        for batch_points in batch(points, BATCH_SIZE):
+            self.client.upsert(collection_name=collection_name, points=batch_points)
+        # -----------------------------------------------------
 
         return {
             "status": "success",
