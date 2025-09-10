@@ -26,11 +26,12 @@ async def upload_docs(
 
         embedding_service: EmbeddingService = Container.resolve("embedding_service") 
         asyncio.create_task(
-            embedding_service.add_document,
-            s3_url = s3_url,
-            filename=filename,
-            user_id=user_id,
-            agent_id=agent_id
+            embedding_service.add_document(
+                s3_url = s3_url,
+                filename=filename,
+                user_id=user_id,
+                agent_id=agent_id
+            )
         )
     except Exception as e:
         print(e)
