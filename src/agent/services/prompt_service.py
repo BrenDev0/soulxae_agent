@@ -53,11 +53,11 @@ class PromptService:
             SystemMessage(content="IMPORTANT! your answer will be 1000 characters or less."),
             SystemMessage(content=f"IMPORTANT! you will always respond in {state['chat_language']}")
         ]
-
+        
+        collection_name = f"user_{state['user_id']}_agent_{state['agent_id']}"
         context = await self.embedding_service.search_for_context(
-            input=state["input"],
-            agent_id=state["agent_id"],
-            user_id=state["user_id"]
+            query=state["input"],
+            collection_name=collection_name
         )
  
         if context:
