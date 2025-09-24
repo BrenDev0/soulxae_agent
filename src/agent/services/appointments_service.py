@@ -117,7 +117,7 @@ class AppoinmentsService:
         
         state["response"] = response.content.strip()
         state["appointments_state"]["appointment_datetime"] = None
-        return system_message
+        return state
 
 
     async def cancel_appointment(self, llm: ChatOpenAI, state: State): 
