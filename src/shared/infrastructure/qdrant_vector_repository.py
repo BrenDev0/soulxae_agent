@@ -34,7 +34,7 @@ class QdrantVectorStore(VectorRepository):
         query_vector: List[float], 
         top_k: int = 4
     ) -> List[SearchResult]:
-        results = self.client.search(
+        results = self._client.search(
             collection_name=namespace,
             query_vector=query_vector,
             limit=top_k,
