@@ -11,7 +11,7 @@ from src.shared.infrastructure.tavily_web_extraction_service import  get_tavily_
 
 
 def get_embedding_service() -> EmbeddingService:
-    return OpenAIEmbeddingService(api_key=os.getenev("OPENAI_API_KEY"))
+    return OpenAIEmbeddingService(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 def get_vector_repository(
