@@ -23,7 +23,7 @@ def create_graph(
         res = await orchestrator.interact(state=state)
 
         return {
-            "appointment_data": res.appointment_data,
+            "appointments_state": res.appointment_data,
             "intent": res.intent
         }
 
