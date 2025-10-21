@@ -32,8 +32,8 @@ class CalendarService:
         host = os.getenv("APP_HOST")
         token = state["token"]
 
-        start_time_str = state["appointments_state"]["appointment_datetime"]
-        start_time = datetime.fromisoformat(start_time_str.replace("Z", "+00:00"))
+        start_time_str = state["appointments_state"]["appointment_datetime"].isoformat()
+        start_time = datetime.fromisoformat(start_time_str)
         end_time = start_time + timedelta(minutes=30)
         
         url = f"https://{host}/google/calendars/secure/events/{state['calendar_id']}"
