@@ -22,7 +22,7 @@ class AppointmentsAgent:
         self, 
         state: State
     ) -> str:
-        missing_data = [key for key, value in state.model_dump().items() if value is None]
+        missing_data = [key for key, value in state["appointments_state"].items() if value is None]
         now = datetime.datetime.now(tz=ZoneInfo("America/Merida")).isoformat()
         system_message = f"""
         You are a personal data collector speaking with a client on a phone call to book thier appointment.
