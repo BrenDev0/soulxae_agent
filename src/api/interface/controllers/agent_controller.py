@@ -45,6 +45,7 @@ class AgentController:
 
 
     async def hanlde_interaction(self, state: State, graph):
+        print(state, "state::::::::interaction")
         final_state: State = await graph.ainvoke(state)
 
         await self.__send_message(final_state["response"], state["token"], state["conversation_id"])

@@ -20,6 +20,7 @@ def create_graph(
     graph = StateGraph(State)
 
     async def orchestrator_node(state: State):
+        print(state, "STATE:ORCHESTRATE")
         res = await orchestrator.interact(state=state)
 
         return {
@@ -33,6 +34,7 @@ def create_graph(
         return {"response": res}
     
     async def general_query_node(state: State):
+        print(state, "STATE:gen query")
         res = await general_queary_agent.interact(state)
 
         return {"response": res}
