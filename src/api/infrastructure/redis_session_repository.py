@@ -10,8 +10,9 @@ class RedisSessionRepository:
     def __init__(self):
         self.redis = Redis.from_url(url=os.getenv("REDIS_URL"))
 
-    def set_session(self, key: str, value: str, expire_seconds: Optional[int] = 3600) -> None:
-        self.redis.set(key, value, ex=expire_seconds)
+    def set_session(self, key: str, value: Any, expire_seconds: Optional[int] = 3600) -> None:
+        json_value = json.dumps(value)
+        self.redis.set(key, json_value, ex=expire_seconds)
 
     def get_session(self, key: str) -> Optional[dict]:
         data = self.redis.get(key)
