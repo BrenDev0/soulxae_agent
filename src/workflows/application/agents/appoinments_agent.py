@@ -116,7 +116,7 @@ class AppointmentsAgent:
     ):
         appointments_state = state["appointments_state"]
         if appointments_state["appointment_datetime"]:
-            available = await CalendarService.check_availability(appointments_state["appointment_datetime"].isoformat())
+            available = await CalendarService.check_availability(state=state)
             if available:
                 prompt = self.__get_prompt_confirmation(
                     state=state
@@ -124,7 +124,7 @@ class AppointmentsAgent:
 
                 await CalendarService.create_event(state=state)
             else: 
-                slots = await CalendarService.get_available_slots(state)
+                slots = await CalendarService.get_available_slots(state=state)
                 prompt = self.__get_prompt_unavailible(
                     slots=slots,
                     state=state
