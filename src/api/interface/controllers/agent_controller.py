@@ -50,10 +50,10 @@ class AgentController:
 
         await self.__send_message(final_state["response"], state["token"], state["conversation_id"])
 
-        await self.handle_state(final_state)
+        self.handle_state(final_state)
     
 
-    async def handle_state(self, state: State, chat_history_limit: int = 8):
+    def handle_state(self, state: State, chat_history_limit: int = 8):
         human_message = {
             "sender": "client",
             "text": state["input"]
@@ -73,7 +73,7 @@ class AgentController:
         if len(chat_history) > chat_history_limit:
             chat_history.pop()  
 
-        await self.__session_repository.set_session(f"conversation_state:{state['conversation_id']}", state)
+        self.__session_repository.set_session(f"conversation_state:{state['conversation_id']}", state)
 
 
 
