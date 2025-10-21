@@ -13,8 +13,8 @@ from src.workflows.application.agents.general_query_agent import GeneralQueryAge
 from src.workflows.application.agents.orchestrator_agent import Orchestrator
 from src.workflows.application.agents.handoff_agent import HandoffAgent
 
-
 from src.workflows.infrastructure.langchain_llm_service import LangchainLlmService
+
 
 
 def get_llm_service() -> LlmService:
@@ -23,8 +23,6 @@ def get_llm_service() -> LlmService:
 
 def get_prompt_service() -> PromptService:
     return PromptService()
-
-
 
 def get_search_for_context_use_case(
     embedding_service: EmbeddingService = Depends(get_embedding_service),

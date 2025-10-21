@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.interface.routes import agents_routes
-from src.api.interface.routes import files_routes
+from src.api.interface.routes import knowledge_base_routes
 from src.shared.dependencies.configure_container import configure_container
 
 @asynccontextmanager
@@ -23,4 +23,4 @@ app.add_middleware(
 
 
 app.include_router(agents_routes.router)
-app.include_router(files_routes.router)
+app.include_router(knowledge_base_routes.router)
