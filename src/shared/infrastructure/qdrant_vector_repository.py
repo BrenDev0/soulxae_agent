@@ -47,7 +47,7 @@ class QdrantVectorStore(VectorRepository):
                 score=point.score,
                 payload=point.payload,
                 text=point.payload.get("text"),
-                metadata=point.payload.get("metadata") 
+                metadata=point.payload.get("metadata", {}) 
             )
             for point in results
         ]
