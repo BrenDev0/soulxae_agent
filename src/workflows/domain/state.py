@@ -3,11 +3,11 @@ from typing_extensions import TypedDict
 from datetime import datetime
 
 class AppointmentState(TypedDict):
-    next_node: str
-    name: str
-    email: str
-    phone: str
-    appointment_datetime: datetime
+    next_node: Optional[str] = None
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    appointment_datetime: Optional[datetime] = None
 
 class State(TypedDict):
     system_message: str
