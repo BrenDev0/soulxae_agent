@@ -40,7 +40,7 @@ class CalendarService:
         headers = {"Authorization": f"Bearer {token}"}
         
         req_body = {
-            "startTime": state["appointments_state"]["appointment_datetime"],
+            "startTime": state["appointments_state"]["appointment_datetime"].isoformat(),
             "endTime": end_time.isoformat(),
             "summary": f"{state['appointments_state']['name']}",
             "description": f"Phone: {state['appointments_state']['phone']}",
