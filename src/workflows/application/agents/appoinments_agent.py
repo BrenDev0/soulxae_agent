@@ -114,8 +114,9 @@ class AppointmentsAgent:
         self,
         state: State,
     ):
-        if state["appointments_state"]["appointment_datetime"]:
-            available = await CalendarService.check_availability(state["appointments_state"]["appointment_datetime"].isoformat())
+        appointments_state = state["appointments_state"]
+        if appointments_state["appointment_datetime"]:
+            available = await CalendarService.check_availability(appointments_state["appointment_datetime"].isoformat())
             if available:
                 prompt = self.__get_prompt_confirmation(
                     state=state
