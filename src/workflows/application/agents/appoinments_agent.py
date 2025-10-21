@@ -135,7 +135,7 @@ class AppointmentsAgent:
             )
              
 
-        response = self.__llm_service.invoke(
+        response = await self.__llm_service.invoke(
             prompt=prompt,
             temperature=state["temperature"],
             max_tokens=state["max_tokens"]
