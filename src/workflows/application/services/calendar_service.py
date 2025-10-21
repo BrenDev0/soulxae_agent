@@ -69,7 +69,7 @@ class CalendarService:
         url = f"https://{host}/google/calendars/secure/availability/{state['calendar_id']}"
         headers = {"Authorization": f"Bearer {token}"}
         req_body = {
-            "slot": state["appointments_state"]["appointment_datetime"],
+            "slot": state["appointments_state"]["appointment_datetime"].isoformat(),
             "calendarReferenceId": state["calendar_id"]
         }
 
